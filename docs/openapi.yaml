@@ -13,6 +13,7 @@ paths:
   /api/encounters/:
     post:
       summary: Add a new encounter
+      description: Creates a new encounter between a mentor and a member
       operationId: addEncounter
       requestBody:
         description: Details of the encounter
@@ -32,6 +33,7 @@ paths:
           description: Invalid input
     get:
       summary: Get all encounters
+      description: Lists all the existing encounters
       operationId: getEncounters
       responses:
         '200':
@@ -43,6 +45,7 @@ paths:
   /api/encounters/{id}/:
     patch:
       summary: Update an existing encounter
+      description: Updates an existing encounter with the provided ID
       operationId: updateEncounter 
       parameters:
         - name: id
@@ -72,7 +75,7 @@ paths:
           description: Validation exception
     get:
       summary: Get an existing encounter
-      description: Get an existing encounter by Id
+      description: Retrieves an existing encounter with the provided ID
       operationId: getEncounter
       parameters:
         - name: id
@@ -95,7 +98,8 @@ paths:
           description: Validation exception
   /api/plans/:
     post:
-      summary: Add a new encounter
+      summary: Add a new plan
+      description: Creates a new plan to be used in an encounter
       operationId: addPlan
       requestBody:
         description: Details of the plan
@@ -115,6 +119,7 @@ paths:
           description: Invalid input
     get:
       summary: Get all plans
+      description: Lists all the plans that can be used in an encounter
       operationId: getPlans
       responses:
         '200':
@@ -126,6 +131,7 @@ paths:
   /api/plans/{id}/:
     patch:
       summary: Update an existing plan
+      description: Updates an existing plan with the provided ID
       operationId: updatePlan 
       parameters:
         - name: id
@@ -155,7 +161,7 @@ paths:
           description: Validation exception
     get:
       summary: Get an existing plan
-      description: Get an existing plan by Id
+      description: Retrieves an existing plan with the provided ID
       operationId: getPlan
       parameters:
         - name: id
