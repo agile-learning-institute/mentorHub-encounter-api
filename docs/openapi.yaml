@@ -182,6 +182,24 @@ paths:
           description: plan not found
         '405':
           description: Validation exception 
+  /api/config/:
+    get:
+      summary: Get API Configuration Information
+      operationId: getConfig
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/config'          
+  /api/health/:
+    get:
+      summary: Promethius Healthcheck endpoint
+      operationId: getHealth
+      responses:
+        '200':
+          description: Successful operation   
 
 components:
   schemas:
@@ -338,3 +356,67 @@ components:
           type: object
       additionalProperties: false
       type: object
+    config:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+          description: Symantic Version Number
+        configItems:
+          type: array
+          items:
+            type: object
+            properties: 
+              name:
+                description: Conf Item Name (Env Var Name, File Name)
+                type: string
+              value:
+                description: The value for that config item
+                type: string
+              from:
+                description: Where the value was found
+                type: string
+                enum:
+                  - default
+                  - environment
+                  - file
+        versions: 
+          type: array
+          items:
+            type: object
+            properties:
+              _id: 
+                description: Collection Version Document ID
+                type: string
+              collectionName: 
+                description: Mongodb Collection name
+                type: string
+              currentVersion:
+                description: Schema Version for the collection
+                type: string
+        enumerators: 
+          type: object
+        mentors:
+          description: List of all members with role Mentor
+          type: array
+          items:
+            type: object
+            properties: 
+              ID:
+                description: MongoDB _id
+                type: string
+              name:
+                description: Name
+                type: string      
+        partners:
+          description: List of all partners
+          type: array
+          items:
+            type: object
+            properties: 
+              ID:
+                description: MongoDB _id
+                type: string
+              name:
+                description: Name
+                type: string 
