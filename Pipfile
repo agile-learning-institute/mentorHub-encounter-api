@@ -8,6 +8,8 @@ flask = "*"
 flask-pymongo = "*"
 flask-wtf = "*"
 pymongo = {extras = ["srv"], version = "*"}
+pyinstaller = "*"
+gunicorn = "*"
 
 [dev-packages]
 
