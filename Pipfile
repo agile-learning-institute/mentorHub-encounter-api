@@ -3,6 +3,18 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[scripts]
+# Install dependencies
+install = "pipenv sync"
+# Run the app locally
+local1 = "mh up mongodb"
+local2 = "python src/app/main.py"
+local = "bash -c 'pipenv run local1 && pipenv run local2'"
+# Build and run the Docker container
+container1 = "docker build --file Dockerfile --tag ghcr.io/agile-learning-institute/mentorhub-encounter-api:latest ."
+container2 = "mh up encounter-api"
+container = "bash -c 'pipenv run container1 && pipenv run container2'"
+
 [packages]
 flask = "*"
 flask-pymongo = "*"
