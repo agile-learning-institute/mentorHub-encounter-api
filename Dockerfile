@@ -32,9 +32,6 @@ WORKDIR /app
 COPY --from=base /src/dist/entrypoint /app/entrypoint
 COPY --from=base /src/PATCH_LEVEL /app/PATCH_LEVEL
 
-# Install necessary packages or dependencies
-RUN apt-get update -y && apt-get install gunicorn -y
-
 EXPOSE 8090
 
 CMD [ "./entrypoint" ]

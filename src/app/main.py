@@ -15,6 +15,3 @@ app.add_url_rule("/api/encounters/", methods=["GET", "POST"], view_func=hello_wo
 app.add_url_rule("/api/encounters/<id>/", methods=["GET", "PATCH"], view_func=hello_world)
 app.add_url_rule("/api/plans/", methods=["GET", "POST"], view_func=hello_world)
 app.add_url_rule("/api/plans/<id>/", methods=["GET", "PATCH"], view_func=hello_world)
-
-if __name__ == '__main__':
-    app.run(debug=True)
