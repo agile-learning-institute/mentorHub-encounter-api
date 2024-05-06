@@ -1,25 +1,26 @@
 openapi: 3.0.3
 info:
-  title: person API
+  title: encounters API
   description: |-
-    This is a super simple API for managing persons
+    This is a super simple API for managing encounters
   contact:
     email: devs@agile-learning.institute
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.11
+  version: 1.0.0.1 
 paths:
-  /api/person/:
+  /api/encounters/:
     post:
-      summary: Add a new person
-      operationId: addperson
+      summary: Add a new encounter
+      description: Creates a new encounter between a mentor and a member
+      operationId: addEncounter
       requestBody:
-        description: Prodcut Name
+        description: Details of the encounter
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Person'
+              $ref: '#/components/schemas/encounters'
         required: true
       responses:
         '200':
@@ -27,32 +28,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Person'          
+                $ref: '#/components/schemas/encounters'          
         '405':
           description: Invalid input
     get:
-      summary: Get a list of people names and ids
-      operationId: getNames
+      summary: Get all encounters
+      description: Lists all the existing encounters
+      operationId: getEncounters
       responses:
         '200':
-          description: Successful operation
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Names'          
-        '404':
-          description: not found
-        '405':
-          description: Validation exception
-  /api/person/{id}:
+                $ref: '#/components/schemas/encounters'
+  /api/encounters/{id}/:
     patch:
-      summary: Update an existing person
-      description: Update an existing person by Id
-      operationId: updatePerson
+      summary: Update an existing encounter
+      description: Updates an existing encounter with the provided ID
+      operationId: updateEncounter 
       parameters:
         - name: id
           in: path
-          description: ID of person to update
+          description: ID of the encounter to be updated
           required: true
           schema:
             type: string
@@ -62,7 +60,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Person'
+              $ref: '#/components/schemas/encounters'
         required: true
       responses:
         '200':
@@ -70,19 +68,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Person'          
+                $ref: '#/components/schemas/encounters'          
         '404':
-          description: person not found
+          description: encounter not found
         '405':
           description: Validation exception
     get:
-      summary: Get an existing person
-      description: Get an existing person by Id
-      operationId: gettPerson
+      summary: Get an existing encounter
+      description: Retrieves an existing encounter with the provided ID
+      operationId: getEncounter
       parameters:
         - name: id
           in: path
-          description: ID of person to return
+          description: ID of encounter to return
           required: true
           schema:
             type: string
@@ -93,44 +91,97 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Person'          
+                $ref: '#/components/schemas/encounters'          
         '404':
-          description: person not found
+          description: encounter not found
         '405':
           description: Validation exception
-  /api/partners/:
-    get:
-      summary: Get Partner Names
-      operationId: getPartners
+  /api/plans/:
+    post:
+      summary: Add a new plan
+      description: Creates a new plan to be used in an encounter
+      operationId: addPlan
+      requestBody:
+        description: Details of the plan
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/plans'
+        required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Names'          
-  /api/mentors/:
+                $ref: '#/components/schemas/plans'          
+        '405':
+          description: Invalid input
     get:
-      summary: Get Mentor Names
-      operationId: getMentors
+      summary: Get all plans
+      description: Lists all the plans that can be used in an encounter
+      operationId: getPlans
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plans'
+  /api/plans/{id}/:
+    patch:
+      summary: Update an existing plan
+      description: Updates an existing plan with the provided ID
+      operationId: updatePlan 
+      parameters:
+        - name: id
+          in: path
+          description: ID of the plan to be updated
+          required: true
+          schema:
+            type: string
+            format: GUID
+      requestBody:
+        description: Updated field
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/plans'
+        required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Names'          
-  /api/enums/:
+                $ref: '#/components/schemas/plans'          
+        '404':
+          description: plan not found
+        '405':
+          description: Validation exception
     get:
-      summary: Get Enumerator Values
-      operationId: getEnums
+      summary: Get an existing plan
+      description: Retrieves an existing plan with the provided ID
+      operationId: getPlan
+      parameters:
+        - name: id
+          in: path
+          description: ID of plan to return
+          required: true
+          schema:
+            type: string
+            format: GUID
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Enums'          
+                $ref: '#/components/schemas/plans'          
+        '404':
+          description: plan not found
+        '405':
+          description: Validation exception 
   /api/config/:
     get:
       summary: Get API Configuration Information
@@ -141,52 +192,177 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Config'          
+                $ref: '#/components/schemas/config'          
   /api/health/:
     get:
       summary: Promethius Healthcheck endpoint
       operationId: getHealth
       responses:
         '200':
-          description: Successful operation
+          description: Successful operation   
 
 components:
   schemas:
-    Enums:
+    encounters:
+      description: An encounter between a member and a mentor
+      required:
+        - _id
+      properties:
+        _id:
+          description: The unique identifier for an encounter
+          type: string
+        date:
+          description: The date/time of the encounter
+          type: string
+        personId:
+          description: The ID of the member in the encounter
+          type: string
+        mentorId:
+          description: The ID of the mentor in the encounter
+          type: string
+        planId:
+          description: The ID of the plan used to start this encounter
+          type: string
+        status:
+          description: The status of this encounter
+          enum:
+            - Active
+            - Archived
+          type: string
+        observations:
+          description: a list of observations
+          items:
+            description: An prompt to uncover information, and the observation made
+            properties:
+              type:
+                description: The type of observation control, from an enumerated list
+                enum:
+                  - Radio
+                  - Check
+                  - Text
+                type: string
+              prompt:
+                description: The question asked
+                pattern: ^[ -~]{0,256}$
+                type: string
+              options:
+                description: >-
+                  The options for an answer (on radio and check type
+                  observations)
+                items:
+                  pattern: ^[ -~]{0,256}$
+                  type: string
+                type: array
+              values:
+                description: >-
+                  The values selected or entered (will be a single value for
+                  radio and text observations)
+                items:
+                  pattern: ^[ -~]{0,256}$
+                  type: string
+                type: array
+            type: object
+          type: array
+        lastSaved:
+          description: Change tracking information
+          properties:
+            fromIp:
+              description: Http Request remote IP address
+              pattern: >-
+                ^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$
+              type: string
+            byUser:
+              description: UUID Of User
+              type: string
+            atTime:
+              description: The date-time when last updated
+              type: string
+            correlationId:
+              description: The logging correlation ID of the update transaction
+              type: string
+          additionalProperties: false
+          type: object
+      additionalProperties: false
       type: object
-    Names: 
-      type: array
-      items:
-        type: object
-        properties: 
-          ID:
-            description: MongoDB _id
-            type: string
-            format: uuid
-          name:
-            description: Name
-            type: string      
-    Config:
+    plans:
+      description: A plan for an encounter between a member and a mentor
+      required:
+        - _id
+        - name
+      properties:
+        _id:
+          description: The unique identifier for an encounter plan
+          type: string
+        name:
+          description: The short name of the plan
+          pattern: ^[^\s]{0,32}$
+          type: string
+        description:
+          description: Description of the Plan
+          pattern: ^[ -~]{0,256}$
+          type: string
+        status:
+          description: The status of this plan
+          enum:
+            - Active
+            - Archived
+          type: string
+        checklist:
+          description: a checklist of planned observations
+          items:
+            description: >-
+              An prompt to uncover information, and possible options to
+              accelerate note taking
+            properties:
+              type:
+                description: The type of observation control, from an enumerated list
+                enum:
+                  - Radio
+                  - Check
+                  - Text
+                type: string
+              prompt:
+                description: The question asked
+                pattern: ^[ -~]{0,256}$
+                type: string
+              options:
+                description: >-
+                  The options for an answer (on radio and check type
+                  observations)
+                items:
+                  pattern: ^[ -~]{0,256}$
+                  type: string
+                type: array
+            type: object
+          type: array
+        lastSaved:
+          description: change tracking breadcrumb
+          properties:
+            fromIp:
+              description: Http Request remote IP address
+              pattern: >-
+                ^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$
+              type: string
+            byUser:
+              description: UUID Of User
+              type: string
+            atTime:
+              description: The date-time when last updated
+              type: string
+            correlationId:
+              description: The logging correlation ID of the update transaction
+              type: string
+          additionalProperties: false
+          type: object
+      additionalProperties: false
+      type: object
+    config:
       type: object
       properties:
         apiVersion:
           type: string
           description: Symantic Version Number
-        Stores: 
-          type: array
-          items:
-            type: object
-            properties:
-              CollectionName: 
-                description: Mongodb Collection name
-                type: string
-              Version:
-                description: Schema Version for the collection
-                type: string
-              Filter:
-                description: special Filter applied to collection
-                type: string
-        ConfigItems:
+        configItems:
           type: array
           items:
             type: object
@@ -204,101 +380,43 @@ components:
                   - default
                   - environment
                   - file
-    Person:
-      type: object
-      required:
-      - name
-      properties:
-        _id:
-          description: The unique identifier for a person
-          type: string
-          format: UUID
-        name:
-          description: The persons name, first and last, or VERSION for the Schema Version
-            document
-          type: string
-          maxLength: 32
-        description:
-          description: Notes or other descriptive text
-          type: string
-          maxLength: 256
-        status:
-          description: The status of this member
-          type: string
-          enum:
-          - Pending
-          - Active
-          - Inactive
-          - Archived
-        member:
-          description: Is this person a Member
-          type: boolean
-        mentor:
-          description: Is this person a Mentor
-          type: boolean
-        donor:
-          description: Is this person a Donor
-          type: boolean
-        contact:
-          description: Is this person a Partner Contact
-          type: boolean
-        mentorId:
-          description: the _id of this persons Mentor if they have one
-          type: string
-          format: UUID
-        partnerId:
-          description: the _id of this persons partner (contacts and members)
-          type: string
-          format: UUID
-        title:
-          description: The person's title in the career path
-          type: string
-          enum:
-          - Apprentice Candidate
-          - Apprentice
-          - Resident
-          - Associate
-          - Senior
-          - Distinguished
-          - N/A
-        eMail:
-          description: The person's eMail address
-          type: string
-          maxLength: 256
-          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-        gitHub:
-          description: The person's gitHub User ID
-          type: string
-          maxLength: 32
-        phone:
-          description: The person's phone number
-          type: string
-          pattern: "^\\d{3}[-.\\s]?\\d{3}[-.\\s]?\\d{4}$"
-        device:
-          description: The type of PC this person is using
-          type: string
-          enum:
-          - Mac Intel
-          - Mac Apple
-          - Linux
-          - Windows / WSL
-        location:
-          description: The location where this person lives
-          type: string
-          maxLength: 64
-        lastSaved:
-          description: The location where this person lives
+        versions: 
+          type: array
+          items:
+            type: object
+            properties:
+              _id: 
+                description: Collection Version Document ID
+                type: string
+              collectionName: 
+                description: Mongodb Collection name
+                type: string
+              currentVersion:
+                description: Schema Version for the collection
+                type: string
+        enumerators: 
           type: object
-          properties:
-            fromIp:
-              description: Http Request remote IP address
-              type: string
-            byUser:
-              description: UUID Of User
-              type: string
-            atTime:
-              description: The date-time when last updated
-              type: string
-            correlationId:
-              description: The logging correlation ID of the update transaction
-              type: string
+        mentors:
+          description: List of all members with role Mentor
+          type: array
+          items:
+            type: object
+            properties: 
+              ID:
+                description: MongoDB _id
+                type: string
+              name:
+                description: Name
+                type: string      
+        partners:
+          description: List of all partners
+          type: array
+          items:
+            type: object
+            properties: 
+              ID:
+                description: MongoDB _id
+                type: string
+              name:
+                description: Name
+                type: string 
