@@ -11,8 +11,8 @@ def create_encounter_routes():
     encounter_routes = Blueprint('encounter_routes', __name__)
 
     # POST /api/encounter/ - Create a encounter
-    @encounter_routes.route('/<string:id>', methods=['GET'])
-    def create_encounter(id):
+    @encounter_routes.route('/', methods=['POST'])
+    def create_encounter():
         try:
             breadcrumb = create_breadcrumb()
             token = create_token()
@@ -21,10 +21,10 @@ def create_encounter_routes():
             logger.info(f"Get encounter Successful {breadcrumb}")
             return jsonify(encounter), 200
         except Exception as e:
-            logger.warn(f"A processing error occurred {e}")
+            logger.warning(f"A processing error occurred {e}")
             return jsonify({"error": "A processing error occurred"}), 500
 
-    # GET /api/encounter/{id}/ - Get a encounter
+    # GET /api/encounter/{id} - Get a encounter
     @encounter_routes.route('/<string:id>', methods=['GET'])
     def get_encounter(id):
         try:
@@ -34,7 +34,7 @@ def create_encounter_routes():
             logger.info(f"Get encounter Successful {breadcrumb}")
             return jsonify(encounter), 200
         except Exception as e:
-            logger.warn(f"A processing error occurred {e}")
+            logger.warning(f"A processing error occurred {e}")
             return jsonify({"error": "A processing error occurred"}), 500
 
     # PATCH /api/encounter/{id} - Update a encounter
@@ -48,7 +48,7 @@ def create_encounter_routes():
             logger.info(f"Update encounter Successful {breadcrumb}")
             return jsonify(encounter), 200
         except Exception as e:
-            logger.warn(f"A processing error occurred {e}")
+            logger.warning(f"A processing error occurred {e}")
             return jsonify({"error": "A processing error occurred"}), 500
         
     # Ensure the Blueprint is returned correctly

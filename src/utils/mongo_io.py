@@ -51,10 +51,10 @@ class MongoIO:
             sys.exit(1)
       
     def _load_versions(self):
-        """Load the versions encounter into memory."""
+        """Load the versions collection into memory."""
         try:
-            versions_encounter = self.db.get_encounter(config.get_version_encounter_name())
-            versions_cursor = versions_encounter.find({})
+            versions_collection = self.db.get_collection(config.get_version_collection_name())
+            versions_cursor = versions_collection.find({})
             versions = list(versions_cursor) 
             config.versions = versions
             logger.info(f"{len(versions)} Versions Loaded.")
@@ -63,90 +63,89 @@ class MongoIO:
             sys.exit(1)
 
     def _load_enumerators(self):
-        """Load the enumerators encounter into memory."""
+        """Load the enumerators collection into memory."""
         if len(config.versions) == 0:
             logger.fatal("No Versions to load Enumerators from - exiting")
             sys.exit(1)
         
         try: 
-            # Get the enumerators version from the curricumum version number.
+            # Get the enumerators version from the curriculum version number.
             version_strings = [version['currentVersion'].split('.').pop() or "0" 
                             for version in config.versions 
-                            if version['encounterName'] == config.get_encounter_encounter_name()]
+                            if version['collectionName'] == config.get_encounters_collection_name()]
             the_version_string = version_strings.pop() if version_strings else "0"
             the_version = int(the_version_string)
 
             # Query the database            
-            enumerators_encounter = self.db.get_encounter(config.get_enumerators_encounter_name())
+            enumerators_collection = self.db.get_collection(config.get_enumerators_collection_name())
             query = { "version": the_version }
-            enumerations = enumerators_encounter.find_one(query)
+            enumerations = enumerators_collection.find_one(query)
     
             # Fail Fast if not found - critical error
             if not enumerations:
-                logger.fatal(f"Enumerators not found for version: {config.get_encounter_encounter_name()}:{the_version_string}")
+                logger.fatal(f"Enumerators not found for version: {config.get_encounters_collection_name()}:{the_version_string}")
                 sys.exit(1)
     
             config.enumerators = enumerations['enumerators']
         except Exception as e:
             logger.fatal(f"Failed to get or load enumerators: {e} - exiting")
             sys.exit(1)
-  
+
+    def get_member_id(self, encounter_id):
+        encounter = self.get_encounter(encounter_id)
+        return encounter.personId
+    
+    def get_mentor_id(self, encounter_id):
+        encounter = self.get_encounter(encounter_id)
+        return encounter.mentorId
+    
     def get_encounter(self, encounter_id):
         """Retrieve a encounter by ID."""
         if not self.connected:
             return None
 
         try:
-            # Query encounter - Lookup resource name/link by resource_id
-            paths_encounter_name =  config.get_paths_encounter_name()
-            encounter_encounter = self.db.get_encounter(config.get_encounter_encounter_name())
+            # Get the encounter document
+            encounter_collection = self.db.get_collection(config.get_encounters_collection_name())
             encounter_object_id = ObjectId(encounter_id)
-
-            pipeline = [
-                # TODO Write Get Mong Pipeline
-            ]
-
-            # Execute the pipeline and get the single encounter returned.
-            results = list(encounter_encounter.aggregate(pipeline))
-            if not results:
-                return None
-            else:
-                encounter = results[0]
-                return encounter
+            encounter = encounter_collection.find_one({"_id": encounter_object_id})
+            return encounter | {}
         except Exception as e:
             logger.error(f"Failed to get encounter: {e}")
             raise
-    
-    def create_encounter(self, encounter_id, breadcrumb):
-        """Create a encounter by ID."""
+
+    def create_encounter(self, person_id, mentor_id, plan_id, breadcrumb):
+        """Create a curriculum by ID."""
         if not self.connected: return None
 
         try:
             encounter_data = {
-                "_id": ObjectId(encounter_id),
-                # TODO: Construct default object
+                "person_id": ObjectId(person_id),
+                "mentor_id": ObjectId(mentor_id),
+                "plan_id": ObjectId(plan_id),
+                "status": "Active",
                 "lastSaved": breadcrumb
             }
-            encounter_encounter = self.db.get_encounter(config.get_encounter_encounter_name())
-            result = encounter_encounter.insert_one(encounter_data)
+            encounter_collection = self.db.get_collection(config.get_encounters_collection_name())
+            result = encounter_collection.insert_one(encounter_data)
             return str(result.inserted_id)
         except Exception as e:
-            logger.error(f"Failed to create encounter: {e}")
-            raise
+            logger.error(f"Failed to create curriculum: {e}")
+            raise   
 
     def update_encounter(self, encounter_id, data):
         """Update a encounter."""
         if not self.connected: return None
 
         try:
-            encounter_encounter = self.db.get_encounter(config.get_encounter_encounter_name())
+            encounter_collection = self.db.get_encounter(config.get_encounters_collection_name())
             encounter_object_id = ObjectId(encounter_id)
             
             match = {"_id": encounter_object_id}
             pipeline = {"$set": data}            
-            result = encounter_encounter.update_one(match, pipeline)
+            result = encounter_collection.update_one(match, pipeline)
         except Exception as e:
-            logger.error(f"Failed to update resource in encounter: {e}")
+            logger.error(f"Failed to update encounter: {e}")
             raise
 
         return result.modified_count

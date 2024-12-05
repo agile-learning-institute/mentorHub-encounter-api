@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [scripts]
-start = "sh -c 'PYTHONPATH=$(pwd)/src python3 -m server'"
-local = "sh -c 'mh down && mh up mongodb && pipenv run start'"
+start = "sh -c 'mh down && mh up mongodb && pipenv run local'"
+local = "sh -c 'PYTHONPATH=$(pwd)/src python3 -m server'"
 test = "echo 'Not Yet Implemented'"
 stepci = "stepci run ./test/stepci.yaml"
 load = "stepci run ./test/stepci.yaml --loadtest"

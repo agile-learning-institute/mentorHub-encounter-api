@@ -30,11 +30,13 @@ metrics.info('app_info', 'Application info', version=config.api_version)
 config_handler = create_config_routes()
 encounter_handler = create_encounter_routes()
 # TODO Other handlers as needed
+# plan_handler = create_plan_routes()
 
 # Register routes
 app.register_blueprint(encounter_handler, url_prefix='/api/encounter')
 app.register_blueprint(config_handler, url_prefix='/api/config')
 # TODO Other routes as needed
+# app.register_blueprint(plan_handler, url_prefix='/api/plan')
 
 # Define a signal handler for SIGTERM and SIGINT
 def handle_exit(signum, frame):
