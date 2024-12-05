@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
-from pymongo import ObjectID
+from pymongo import ObjectId
+
 import os
 import logging
 
@@ -20,13 +21,15 @@ class Config:
             self.api_version = ""
 
             # Private properties
-            self._port = 8088
             self._config_folder = "./"
+            self._port = 8088
+            self._connection_string = ""
+            self._db_name = ""
             self._version_collection_name = ""
             self._enumerators_collection_name = ""
+            self._encounters_collection_name = ""
+            self._plans_collection_name = ""
 
-            # TODO Additional config properties
-            
             # Initialize configuration
             self.initialize()
 
@@ -36,10 +39,14 @@ class Config:
         self.versions = []
         self.enumerators = {}
         self.api_version = "1.0." + self._get_config_value("BUILT_AT", "LOCAL", False)
-        self._config_folder = self._get_config_value("CONFIG_FOLDER", "/opt/mentorhub-partner-api", False)
+        self._config_folder = self._get_config_value("CONFIG_FOLDER", "/opt/mentorhub-encounter-api", False)
         self._port = int(self._get_config_value("PORT", "8088", False))
-
-        # TODO Additional config item initialization 
+        self._connection_string = int(self._get_config_value("CONNECTION_STRING", "mongodb://mongodb:27017/?replicaSet=rs0", False))
+        self._db_name = int(self._get_config_value("DB_NAME", "mentorHub", False))
+        self._version_collection_name = int(self._get_config_value("VERSION_COLLECTION_NAME", "versions", False))
+        self._enumerators_collection_name = int(self._get_config_value("ENUMERATORS_COLLECTION_NAME", "enumerators", False))
+        self._encounters_collection_name = int(self._get_config_value("ENCOUNTERS_COLLECTION_NAME", "encounters", False))
+        self._plans_collection_name = int(self._get_config_value("PLANS_COLLECTION_NAME", "plans", False))
         
         logger.info(f"Configuration Initialized: {self.config_items}")
             
@@ -79,8 +86,23 @@ class Config:
     def get_enumerators_collection_name(self):
         return self._enumerators_collection_name
 
-    # TODO Add getters as needed
+    def get_connection_string(self):
+        return self._connection_string
 
+    def get_db_name(self):
+        return self._db_name
+
+    def get_version_collection_name(self):
+        return self._version_collection_name
+
+    def get_enumerators_collection_name(self):
+        return self._enumerators_collection_name
+
+    def get_encounters_collection_name(self):
+        return self._encounters_collection_name
+
+    def get_plans_collection_name(self):
+        return self._plans_collection_name
 
     # Serializer
     def to_dict(self):

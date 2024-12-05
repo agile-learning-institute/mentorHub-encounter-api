@@ -20,9 +20,9 @@ class TestServer(unittest.TestCase):
         response = self.client.get('/api/health/')
         self.assertEqual(response.status_code, 200)
 
-    def test_COLLECTION_routes_registered(self):
-        # Test if COLLECTION routes are registered
-        response = self.client.get('/api/COLLECTION/TEST_ID/')
+    def test_encounter_routes_registered(self):
+        # Test if encounter routes are registered
+        response = self.client.get('/api/encounter/eeee00000000000000000001/')
         self.assertIn(response.status_code, [200, 404])  # 200 if exists, 404 if not found
         
     def test_config_routes_registered(self):

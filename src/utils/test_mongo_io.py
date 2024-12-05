@@ -18,7 +18,7 @@ class TestMongoIO(unittest.TestCase):
 
     def tearDown(self):
         mongo_io = MongoIO.get_instance()
-        mongo_io.delete_COLLECTION("TEST_ID")
+        mongo_io.delete_encounter("eeee00000000000000000001")
         mongo_io.disconnect()
     
     def test_singleton_behavior(self):

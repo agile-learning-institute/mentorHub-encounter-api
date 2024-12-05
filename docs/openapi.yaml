@@ -1,38 +1,38 @@
 openapi: 3.0.3
 info:
-  title: COLLECTION API
+  title: encounter API
   version: 1.0.0
   description: |
-    This API manages the COLLECTION, providing endpoints to add, update, and retrieve documents.
+    This API manages the encounter, providing endpoints to add, update, and retrieve documents.
   contact:
     email: devs@agile-learning.institute
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
-  /api/COLLECTION:
+  /api/encounter:
     post:
-      summary: Create a COLLECTION document
+      summary: Create a encounter document
       description: Create a new document
-      operationId: post_COLLECTION
+      operationId: post_encounter
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/COLLECTION'
+                $ref: '#/components/schemas/encounter'
         '500':
           description: A Processing Error occurred
-  /api/COLLECTION/{id}:
+  /api/encounter/{id}:
     get:
-      summary: Get a COLLECTION document
+      summary: Get a encounter document
       description: Get the specified document
-      operationId: get_COLLECTION
+      operationId: get_encounter
       parameters:
         - name: id
           in: path
-          description: ID of COLLECTION document to retrieve
+          description: ID of encounter document to retrieve
           required: true
           schema:
             type: string
@@ -43,27 +43,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/COLLECTION'
+                $ref: '#/components/schemas/encounter'
         '500':
           description: A Processing Error occurred
     patch:
-      summary: Update a COLLECTION document
-      description: Update the COLLECTION with TODO 
-      operationId: updateCOLLECTION
+      summary: Update a encounter document
+      description: Update the encounter document
+      operationId: update_encounter
       parameters:
         - name: id
           in: path
-          description: ID of COLLECTION to update
+          description: ID of encounter to update
           required: true
           schema:
             type: string
             format: GUID
       requestBody:
-        description: COLLECTION
+        description: encounter
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/COLLECTION'
+              $ref: '#/components/schemas/encounter'
         required: true
       responses:
         '200':
@@ -71,7 +71,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/COLLECTION'
+                $ref: '#/components/schemas/encounter'
         '500':
           description: A Processing Error occurred
 
@@ -101,9 +101,85 @@ paths:
 
 components:
   schemas:
-    COLLECTION:
-      description: TODO - Provide object schema
+    encounter:
+      description: An encounter between a member and a mentor
       type: object
+      required:
+        - _id
+      properties:
+        _id:
+          description: The unique identifier for an encounter
+          type: string
+        date:
+          description: The date/time of the encounter
+          type: string
+        personId:
+          description: The ID of the member in the encounter
+          type: string
+        mentorId:
+          description: The ID of the mentor in the encounter
+          type: string
+        planId:
+          description: The ID of the plan used to start this encounter
+          type: string
+        status:
+          description: The status of this encounter
+          enum:
+            - Active
+            - Archived
+          type: string
+        observations:
+          description: a list of observations
+          items:
+            description: An prompt to uncover information, and the observation made
+            properties:
+              type:
+                description: The type of observation control, from an enumerated list
+                enum:
+                  - Radio
+                  - Check
+                  - Text
+                type: string
+              prompt:
+                description: The question asked
+                pattern: ^[ -~]{0,256}$
+                type: string
+              options:
+                description: >-
+                  The options for an answer (on radio and check type
+                  observations)
+                items:
+                  pattern: ^[ -~]{0,256}$
+                  type: string
+                type: array
+              values:
+                description: >-
+                  The values selected or entered (will be a single value for
+                  radio and text observations)
+                items:
+                  pattern: ^[ -~]{0,256}$
+                  type: string
+                type: array
+            type: object
+          type: array
+        lastSaved:
+          description: Change tracking information
+          properties:
+            fromIp:
+              description: Http Request remote IP address
+              type: string
+            byUser:
+              description: UUID Of User
+              type: string
+            atTime:
+              description: The date-time when last updated
+              type: string
+            correlationId:
+              description: The logging correlation ID of the update transaction
+              type: string
+          additionalProperties: false
+          type: object
+      additionalProperties: false
 
     Config:
       type: object

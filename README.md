@@ -1,49 +1,18 @@
 # template-python-flask-api
 
-# INSTRUCTIONS
-This is a template repo - Do these things in each file. (s/from/to/g is global search/replace)
-- [ ] README.md (this file)
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-     - [ ] Default API Port s/PORT/1234/g
-     - [ ] Default Test Data _id s/TEST_ID/<24byte-hex>/g
-     - [ ] Search for TODO and Do the thing
-- [ ] [Github Actions](./.github/workflows/docker-push.yml)
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-- [ ] [Swagger](./docs/openapi.yaml) 
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-     - [ ] Search for TODO and Do the thing
-- [ ] [config object](./src/config/config.py)
-     - [ ] Search for TODO and Do the thing
-- [ ] [COLLECTION Routes](./src/routes/COLLECTION_routes.py)
-     - [ ] Rename the file
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-     - [ ] Search for TODO and Do the thing
-- [ ] [COLLECTION Service](./src/services/COLLECTION_services.py)
-     - [ ] Rename the file
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-     - [ ] Search for TODO and Do the thing
+# Remaining TODO work
+- [ ] [encounter Service](./src/services/encounter_services.py)
 - [ ] [MongoIO](./src/utils/mongo_io.py)
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-     - [ ] Search for TODO and Do the thing
 - [ ] [server.py](/src/server.py)
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-     - [ ] Search for TODO and Do the thing
-- [ ] [Dockerfile](./Dockerfile)
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-- [ ] [Pipfile](./Pipfile)
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
 - [ ] [All Test Files](./test/)
-     - [ ] Primary Collection s/COLLECTION/<collection>/g (all lower case)
-     - [ ] Default Test Data _id s/TEST_ID/<24byte-hex>/g
-     - [ ] Search for TODO and Do the thing
 
 Now you can remove these instructions from the readme, 
 
 ## Overview
 
-This is a template repo for a simple Flask API that provides Get/Post/Patch services for documents in the COLLECTION collection. This API uses data from a [backing Mongo Database](https://github.com/agile-learning-institute/mentorHub-mongodb), and supports a [Single Page Application.](https://github.com/agile-learning-institute/mentorHub-COLLECTION-ui)
+This is a template repo for a simple Flask API that provides Get/Post/Patch services for documents in the encounter encounter. This API uses data from a [backing Mongo Database](https://github.com/agile-learning-institute/mentorHub-mongodb), and sup8090s a [Single Page Application.](https://github.com/agile-learning-institute/mentorHub-encounter-ui)
 
-The OpenAPI specifications for the api can be found in the ``docs`` folder, and are served [here](https://agile-learning-institute.github.io/mentorHub-COLLECTION-api/)
+The OpenAPI specifications for the api can be found in the ``docs`` folder, and are served [here](https://agile-learning-institute.github.io/mentorHub-encounter-api/)
 
 ## Prerequisites
 
@@ -88,14 +57,14 @@ pipenv run container
 This will build the new container, and {re}start the mongodb and API container.
 
 ## Run StepCI end-2-end testing
-NOTE: Assumes the API is running at localhost:PORT
+NOTE: Assumes the API is running at localhost:8090
 
 ```bash
 pipenv run stepci
 ```
 
 ## Run StepCI load testing
-NOTE: Assumes the API is running at localhost:PORT
+NOTE: Assumes the API is running at localhost:8090
 
 ```bash
 pipenv run load
@@ -117,36 +86,36 @@ If you want to do more manual testing, here are the curl commands to use
 
 ### Test Health Endpoint
 
-This endpoint supports the Prometheus monitoring standards for a health check endpoint
+This endpoint sup8090s the Prometheus monitoring standards for a health check endpoint
 
 ```bash
-curl http://localhost:PORT/api/health/
+curl http://localhost:8090/api/health/
 ```
 
 ### Test Config Endpoint
 
 ```bash
-curl http://localhost:PORT/api/config/
+curl http://localhost:8090/api/config/
 ```
 
 ### Test get a document
 
 ```bash
-curl http://localhost:PORT/api/COLLECTION/TEST_ID/
+curl http://localhost:8090/api/encounter/eeee00000000000000000001/
 ```
 
 ### Test add a Document 
 
 ```bash
-curl -X POST http://localhost:PORT/api/COLLECTION/TEST_ID/ \
-     -d '{}' TODO: Provide simple test data
+curl -X POST http://localhost:8090/api/encounter/eeee00000000000000000001/ \
+     -d '{"date":{"$date":"1/1/2024 0:00:00"},"personId":{"$oid":"aaaa00000000000000000004"},"mentorId":{"$oid":"aaaa00000000000000000027"},"planId":{"$oid":"EEFF00000000000000000002"},"status":"Active"}'
 ```
 
 ### Test update a Document
 
 ```bash
-curl -X PATCH http://localhost:PORT/api/COLLECTION/TEST_ID/ \
-     -d '{}' TODO: Provide simple test data
+curl -X PATCH http://localhost:8090/api/encounter/eeee00000000000000000001/ \
+     -d '{"observations":[{"type":"Check","prompt":"Introductions","options":["Mike","Institute"],"values":[]}}'
 ```
 
 ## Observability and Configuration
@@ -155,4 +124,4 @@ The ```api/config/``` endpoint will return a list of configuration values. These
 
 The ```api/health/``` endpoint is a [Prometheus](https://prometheus.io) Health check endpoint.
 
-The [Dockerfile](./Dockerfile) uses a 2-stage build, and supports both amd64 and arm64 architectures. 
+The [Dockerfile](./Dockerfile) uses a 2-stage build, and sup8090s both amd64 and arm64 architectures. 

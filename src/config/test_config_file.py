@@ -17,14 +17,14 @@ class TestConfigFiles(unittest.TestCase):
 
     def test_file_properties_in_getters(self):
         self.assertEqual(config.get_port(), 9999)
-        self.assertEqual(config.get_version_collection_name(), "TEST_VALUE")
-        self.assertEqual(config.get_enumerators_collection_name(), "TEST_VALUE")
+        self.assertEqual(config.get_version_encounter_name(), "TEST_VALUE")
+        self.assertEqual(config.get_enumerators_encounter_name(), "TEST_VALUE")
         # TODO Additional properties
 
     def test_file_config_items(self):
         self._test_config_file_value("DB_NAME")
-        self._test_config_file_value("VERSION_COLLECTION")
-        self._test_config_file_value("ENUMERATORS_COLLECTION")
+        self._test_config_file_value("VERSION_encounter")
+        self._test_config_file_value("ENUMERATORS_encounter")
         # TODO Additional properties
 
     def _test_config_file_value(self, config_name):

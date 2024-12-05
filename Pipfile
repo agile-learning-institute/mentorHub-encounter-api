@@ -9,8 +9,8 @@ local = "sh -c 'mh down && mh up mongodb && pipenv run start'"
 test = "echo 'Not Yet Implemented'"
 stepci = "stepci run ./test/stepci.yaml"
 load = "stepci run ./test/stepci.yaml --loadtest"
-build = "docker build --tag ghcr.io/agile-learning-institute/mentorhub-COLLECTION-api:latest ."
-container = "sh -c 'mh down && pipenv run build && mh up COLLECTION-api'"
+build = "docker build --tag ghcr.io/agile-learning-institute/mentorhub-encounter-api:latest ."
+container = "sh -c 'mh down && pipenv run build && mh up encounter-api'"
 
 [packages]
 flask = "*"

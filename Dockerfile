@@ -17,13 +17,13 @@ RUN echo $(date +'%Y%m%d-%H%M%S') > /app/BUILT_AT
 FROM python:3.12-slim
 
 # Set the working directory in the container
-WORKDIR /opt/mentorhub-COLLECTION-api
+WORKDIR /opt/mentorhub-encounter-api
 
 # Copy the entire source code and the BUILT_AT file from the build stage
-COPY --from=build /app/ /opt/mentorhub-COLLECTION-api/
+COPY --from=build /app/ /opt/mentorhub-encounter-api/
 
 # Install pipenv and dependencies
-COPY Pipfile Pipfile.lock /opt/mentorhub-COLLECTION-api/
+COPY Pipfile Pipfile.lock /opt/mentorhub-encounter-api/
 RUN pip install pipenv && pipenv install --deploy --system
 
 # Install Gunicorn for running the Flask app in production
@@ -33,7 +33,7 @@ RUN pip install gunicorn gevent
 EXPOSE 8088
 
 # Set Environment Variables
-ENV PYTHONPATH=/opt/mentorhub-COLLECTION-api
+ENV PYTHONPATH=/opt/mentorhub-encounter-api
 
 # Command to run the application using Gunicorn with exec to forward signals
 CMD exec gunicorn --bind 0.0.0.0:8088 src.server:app

@@ -51,10 +51,10 @@ class MongoIO:
             sys.exit(1)
       
     def _load_versions(self):
-        """Load the versions collection into memory."""
+        """Load the versions encounter into memory."""
         try:
-            versions_collection = self.db.get_collection(config.get_version_collection_name())
-            versions_cursor = versions_collection.find({})
+            versions_encounter = self.db.get_encounter(config.get_version_encounter_name())
+            versions_cursor = versions_encounter.find({})
             versions = list(versions_cursor) 
             config.versions = versions
             logger.info(f"{len(versions)} Versions Loaded.")
@@ -63,7 +63,7 @@ class MongoIO:
             sys.exit(1)
 
     def _load_enumerators(self):
-        """Load the enumerators collection into memory."""
+        """Load the enumerators encounter into memory."""
         if len(config.versions) == 0:
             logger.fatal("No Versions to load Enumerators from - exiting")
             sys.exit(1)
@@ -72,18 +72,18 @@ class MongoIO:
             # Get the enumerators version from the curricumum version number.
             version_strings = [version['currentVersion'].split('.').pop() or "0" 
                             for version in config.versions 
-                            if version['collectionName'] == config.get_COLLECTION_collection_name()]
+                            if version['encounterName'] == config.get_encounter_encounter_name()]
             the_version_string = version_strings.pop() if version_strings else "0"
             the_version = int(the_version_string)
 
             # Query the database            
-            enumerators_collection = self.db.get_collection(config.get_enumerators_collection_name())
+            enumerators_encounter = self.db.get_encounter(config.get_enumerators_encounter_name())
             query = { "version": the_version }
-            enumerations = enumerators_collection.find_one(query)
+            enumerations = enumerators_encounter.find_one(query)
     
             # Fail Fast if not found - critical error
             if not enumerations:
-                logger.fatal(f"Enumerators not found for version: {config.get_COLLECTION_collection_name()}:{the_version_string}")
+                logger.fatal(f"Enumerators not found for version: {config.get_encounter_encounter_name()}:{the_version_string}")
                 sys.exit(1)
     
             config.enumerators = enumerations['enumerators']
@@ -91,62 +91,62 @@ class MongoIO:
             logger.fatal(f"Failed to get or load enumerators: {e} - exiting")
             sys.exit(1)
   
-    def get_COLLECTION(self, COLLECTION_id):
-        """Retrieve a COLLECTION by ID."""
+    def get_encounter(self, encounter_id):
+        """Retrieve a encounter by ID."""
         if not self.connected:
             return None
 
         try:
-            # Query COLLECTION - Lookup resource name/link by resource_id
-            paths_collection_name =  config.get_paths_collection_name()
-            COLLECTION_collection = self.db.get_collection(config.get_COLLECTION_collection_name())
-            COLLECTION_object_id = ObjectId(COLLECTION_id)
+            # Query encounter - Lookup resource name/link by resource_id
+            paths_encounter_name =  config.get_paths_encounter_name()
+            encounter_encounter = self.db.get_encounter(config.get_encounter_encounter_name())
+            encounter_object_id = ObjectId(encounter_id)
 
             pipeline = [
                 # TODO Write Get Mong Pipeline
             ]
 
-            # Execute the pipeline and get the single COLLECTION returned.
-            results = list(COLLECTION_collection.aggregate(pipeline))
+            # Execute the pipeline and get the single encounter returned.
+            results = list(encounter_encounter.aggregate(pipeline))
             if not results:
                 return None
             else:
-                COLLECTION = results[0]
-                return COLLECTION
+                encounter = results[0]
+                return encounter
         except Exception as e:
-            logger.error(f"Failed to get COLLECTION: {e}")
+            logger.error(f"Failed to get encounter: {e}")
             raise
     
-    def create_COLLECTION(self, COLLECTION_id, breadcrumb):
-        """Create a COLLECTION by ID."""
+    def create_encounter(self, encounter_id, breadcrumb):
+        """Create a encounter by ID."""
         if not self.connected: return None
 
         try:
-            COLLECTION_data = {
-                "_id": ObjectId(COLLECTION_id),
+            encounter_data = {
+                "_id": ObjectId(encounter_id),
                 # TODO: Construct default object
                 "lastSaved": breadcrumb
             }
-            COLLECTION_collection = self.db.get_collection(config.get_COLLECTION_collection_name())
-            result = COLLECTION_collection.insert_one(COLLECTION_data)
+            encounter_encounter = self.db.get_encounter(config.get_encounter_encounter_name())
+            result = encounter_encounter.insert_one(encounter_data)
             return str(result.inserted_id)
         except Exception as e:
-            logger.error(f"Failed to create COLLECTION: {e}")
+            logger.error(f"Failed to create encounter: {e}")
             raise
 
-    def update_COLLECTION(self, COLLECTION_id, data):
-        """Update a COLLECTION."""
+    def update_encounter(self, encounter_id, data):
+        """Update a encounter."""
         if not self.connected: return None
 
         try:
-            COLLECTION_collection = self.db.get_collection(config.get_COLLECTION_collection_name())
-            COLLECTION_object_id = ObjectId(COLLECTION_id)
+            encounter_encounter = self.db.get_encounter(config.get_encounter_encounter_name())
+            encounter_object_id = ObjectId(encounter_id)
             
-            match = {"_id": COLLECTION_object_id}
+            match = {"_id": encounter_object_id}
             pipeline = {"$set": data}            
-            result = COLLECTION_collection.update_one(match, pipeline)
+            result = encounter_encounter.update_one(match, pipeline)
         except Exception as e:
-            logger.error(f"Failed to update resource in COLLECTION: {e}")
+            logger.error(f"Failed to update resource in encounter: {e}")
             raise
 
         return result.modified_count

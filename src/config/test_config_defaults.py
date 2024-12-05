@@ -10,9 +10,9 @@ class TestConfigDefaults(unittest.TestCase):
     def test_default_properties_in_getters(self):
         self.assertEqual(config.get_config_folder(), "/opt/mentorhub-partner-api")
         self.assertEqual(config.get_port(), 8088)
-        self.assertEqual(config.get_COLLECTION_collection_name(), "COLLECTION")
-        self.assertEqual(config.get_version_collection_name(), "msmCurrentVersions")
-        self.assertEqual(config.get_enumerators_collection_name(), "enumerators")
+        self.assertEqual(config.get_encounter_encounter_name(), "encounter")
+        self.assertEqual(config.get_version_encounter_name(), "msmCurrentVersions")
+        self.assertEqual(config.get_enumerators_encounter_name(), "enumerators")
         # TODO Other default value tests
         
     def test_to_dict(self):
@@ -36,8 +36,8 @@ class TestConfigDefaults(unittest.TestCase):
         self._test_config_default_value("PORT", "8088")
         self._test_config_default_value("BUILT_AT", "LOCAL")
         self._test_config_default_value("CONFIG_FOLDER", "/opt/mentorhub-partner-api")
-        self._test_config_default_value("VERSION_COLLECTION", "msmCurrentVersions")
-        self._test_config_default_value("ENUMERATORS_COLLECTION", "enumerators")
+        self._test_config_default_value("VERSION_encounter", "msmCurrentVersions")
+        self._test_config_default_value("ENUMERATORS_encounter", "enumerators")
         # TODO Other Default CI's
 
     def _test_config_default_value(self, config_name, expected_value):

@@ -8,7 +8,7 @@ class TestConfigEnvironment(unittest.TestCase):
     def setUpClass(cls):
         """Class-level setup: Initialize configuration items"""
         cls.config_items = [
-            "BUILT_AT", "CONFIG_FOLDER", "VERSION_COLLECTION", "ENUMERATORS_COLLECTION"
+            "BUILT_AT", "CONFIG_FOLDER", "VERSION_encounter", "ENUMERATORS_encounter"
             # TODO Other CI's
         ]
         
@@ -32,15 +32,15 @@ class TestConfigEnvironment(unittest.TestCase):
     def test_environment_properties_in_getters(self):
         self.assertEqual(config.get_config_folder(), "ENV_VALUE")
         self.assertEqual(config.get_port(), 9999)
-        self.assertEqual(config.get_version_collection_name(), "ENV_VALUE")
-        self.assertEqual(config.get_enumerators_collection_name(), "ENV_VALUE")
+        self.assertEqual(config.get_version_encounter_name(), "ENV_VALUE")
+        self.assertEqual(config.get_enumerators_encounter_name(), "ENV_VALUE")
         # TODO Other Properties
 
     def test_environment_config_items(self):
         self._test_config_environment_value("BUILT_AT")
         self._test_config_environment_value("CONFIG_FOLDER")
-        self._test_config_environment_value("VERSION_COLLECTION")
-        self._test_config_environment_value("ENUMERATORS_COLLECTION")
+        self._test_config_environment_value("VERSION_encounter")
+        self._test_config_environment_value("ENUMERATORS_encounter")
         # TODO More Tests
 
     def _test_config_environment_value(self, config_name):
