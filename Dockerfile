@@ -1,37 +1,39 @@
-# Base build stage
-FROM python:3.10 AS base
-  
-WORKDIR /src
-COPY . .
+# Stage 1: Build stage
+FROM python:3.12-slim as build
 
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE=1
+# Install Git and other dependencies
+RUN apt-get update && apt-get install -y git
 
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED=1
-
-# Configure Pipenv & install depencies
-COPY Pipfile Pipfile.lock ./
-RUN pip install pipenv && \
-    export PIPENV_VENV_IN_PROJECT=true && \
-    pipenv install
-
-# Copy server script & Bundle API as an executable
-RUN pipenv run pyinstaller ./src/app/wsgi.py --onefile --name entrypoint
-
-# Get branch and patch level, then create PATCH_LEVEL file
-RUN BRANCH=$(git rev-parse --abbrev-ref HEAD) && \
-    DATE=$(date "+%Y-%m-%d:%H:%M:%S") && \
-    echo $DATE.$BRANCH > /src/PATCH_LEVEL
-
-# Final stage
-FROM ubuntu:latest AS deploy
-
+# Set the working directory in the container
 WORKDIR /app
 
-COPY --from=base /src/dist/entrypoint /app/entrypoint
-COPY --from=base /src/PATCH_LEVEL /app/PATCH_LEVEL
+# Copy the entire context to the container
+COPY . .
 
-EXPOSE 8090
+# Get the current Git branch and build time
+RUN echo $(date +'%Y%m%d-%H%M%S') > /app/BUILT_AT
 
-CMD [ "./entrypoint" ]
+# Stage 2: Production stage
+FROM python:3.12-slim
+
+# Set the working directory in the container
+WORKDIR /opt/mentorhub-COLLECTION-api
+
+# Copy the entire source code and the BUILT_AT file from the build stage
+COPY --from=build /app/ /opt/mentorhub-COLLECTION-api/
+
+# Install pipenv and dependencies
+COPY Pipfile Pipfile.lock /opt/mentorhub-COLLECTION-api/
+RUN pip install pipenv && pipenv install --deploy --system
+
+# Install Gunicorn for running the Flask app in production
+RUN pip install gunicorn gevent
+
+# Expose the port the app will run on
+EXPOSE 8088
+
+# Set Environment Variables
+ENV PYTHONPATH=/opt/mentorhub-COLLECTION-api
+
+# Command to run the application using Gunicorn with exec to forward signals
+CMD exec gunicorn --bind 0.0.0.0:8088 src.server:app

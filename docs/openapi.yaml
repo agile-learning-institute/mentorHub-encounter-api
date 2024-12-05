@@ -1,66 +1,69 @@
 openapi: 3.0.3
 info:
-  title: encounters API
-  description: |-
-    This is a super simple API for managing encounters
+  title: COLLECTION API
+  version: 1.0.0
+  description: |
+    This API manages the COLLECTION, providing endpoints to add, update, and retrieve documents.
   contact:
     email: devs@agile-learning.institute
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0.1 
 paths:
-  /api/encounters/:
+  /api/COLLECTION:
     post:
-      summary: Add a new encounter
-      description: Creates a new encounter between a mentor and a member
-      operationId: addEncounter
-      requestBody:
-        description: Details of the encounter
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/encounters'
-        required: true
+      summary: Create a COLLECTION document
+      description: Create a new document
+      operationId: post_COLLECTION
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/encounters'          
-        '405':
-          description: Invalid input
+                $ref: '#/components/schemas/COLLECTION'
+        '500':
+          description: A Processing Error occurred
+  /api/COLLECTION/{id}:
     get:
-      summary: Get all encounters
-      description: Lists all the existing encounters
-      operationId: getEncounters
+      summary: Get a COLLECTION document
+      description: Get the specified document
+      operationId: get_COLLECTION
+      parameters:
+        - name: id
+          in: path
+          description: ID of COLLECTION document to retrieve
+          required: true
+          schema:
+            type: string
+            format: GUID
       responses:
         '200':
-          description: Success
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/encounters'
-  /api/encounters/{id}/:
+                $ref: '#/components/schemas/COLLECTION'
+        '500':
+          description: A Processing Error occurred
     patch:
-      summary: Update an existing encounter
-      description: Updates an existing encounter with the provided ID
-      operationId: updateEncounter 
+      summary: Update a COLLECTION document
+      description: Update the COLLECTION with TODO 
+      operationId: updateCOLLECTION
       parameters:
         - name: id
           in: path
-          description: ID of the encounter to be updated
+          description: ID of COLLECTION to update
           required: true
           schema:
             type: string
             format: GUID
       requestBody:
-        description: Updated field
+        description: COLLECTION
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/encounters'
+              $ref: '#/components/schemas/COLLECTION'
         required: true
       responses:
         '200':
@@ -68,123 +71,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/encounters'          
-        '404':
-          description: encounter not found
-        '405':
-          description: Validation exception
-    get:
-      summary: Get an existing encounter
-      description: Retrieves an existing encounter with the provided ID
-      operationId: getEncounter
-      parameters:
-        - name: id
-          in: path
-          description: ID of encounter to return
-          required: true
-          schema:
-            type: string
-            format: GUID
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/encounters'          
-        '404':
-          description: encounter not found
-        '405':
-          description: Validation exception
-  /api/plans/:
-    post:
-      summary: Add a new plan
-      description: Creates a new plan to be used in an encounter
-      operationId: addPlan
-      requestBody:
-        description: Details of the plan
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/plans'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/plans'          
-        '405':
-          description: Invalid input
-    get:
-      summary: Get all plans
-      description: Lists all the plans that can be used in an encounter
-      operationId: getPlans
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/plans'
-  /api/plans/{id}/:
-    patch:
-      summary: Update an existing plan
-      description: Updates an existing plan with the provided ID
-      operationId: updatePlan 
-      parameters:
-        - name: id
-          in: path
-          description: ID of the plan to be updated
-          required: true
-          schema:
-            type: string
-            format: GUID
-      requestBody:
-        description: Updated field
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/plans'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/plans'          
-        '404':
-          description: plan not found
-        '405':
-          description: Validation exception
-    get:
-      summary: Get an existing plan
-      description: Retrieves an existing plan with the provided ID
-      operationId: getPlan
-      parameters:
-        - name: id
-          in: path
-          description: ID of plan to return
-          required: true
-          schema:
-            type: string
-            format: GUID
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/plans'          
-        '404':
-          description: plan not found
-        '405':
-          description: Validation exception 
+                $ref: '#/components/schemas/COLLECTION'
+        '500':
+          description: A Processing Error occurred
+
   /api/config/:
     get:
       summary: Get API Configuration Information
+      description: |
+        Retrieves information about the API's configuration.
       operationId: getConfig
       responses:
         '200':
@@ -192,231 +87,45 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/config'          
+                $ref: '#/components/schemas/Config'
+
   /api/health/:
     get:
-      summary: Promethius Healthcheck endpoint
-      operationId: getHealth
+      summary: Health Check Endpoint
+      description: |
+        Retrieves information about the health status of the API.
+      operationId: healthCheck
       responses:
         '200':
-          description: Successful operation   
+          description: Successful operation
 
 components:
   schemas:
-    encounters:
-      description: An encounter between a member and a mentor
-      required:
-        - _id
-      properties:
-        _id:
-          description: The unique identifier for an encounter
-          type: string
-        date:
-          description: The date/time of the encounter
-          type: string
-        personId:
-          description: The ID of the member in the encounter
-          type: string
-        mentorId:
-          description: The ID of the mentor in the encounter
-          type: string
-        planId:
-          description: The ID of the plan used to start this encounter
-          type: string
-        status:
-          description: The status of this encounter
-          enum:
-            - Active
-            - Archived
-          type: string
-        observations:
-          description: a list of observations
-          items:
-            description: An prompt to uncover information, and the observation made
-            properties:
-              type:
-                description: The type of observation control, from an enumerated list
-                enum:
-                  - Radio
-                  - Check
-                  - Text
-                type: string
-              prompt:
-                description: The question asked
-                pattern: ^[ -~]{0,256}$
-                type: string
-              options:
-                description: >-
-                  The options for an answer (on radio and check type
-                  observations)
-                items:
-                  pattern: ^[ -~]{0,256}$
-                  type: string
-                type: array
-              values:
-                description: >-
-                  The values selected or entered (will be a single value for
-                  radio and text observations)
-                items:
-                  pattern: ^[ -~]{0,256}$
-                  type: string
-                type: array
-            type: object
-          type: array
-        lastSaved:
-          description: Change tracking information
-          properties:
-            fromIp:
-              description: Http Request remote IP address
-              pattern: >-
-                ^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$
-              type: string
-            byUser:
-              description: UUID Of User
-              type: string
-            atTime:
-              description: The date-time when last updated
-              type: string
-            correlationId:
-              description: The logging correlation ID of the update transaction
-              type: string
-          additionalProperties: false
-          type: object
-      additionalProperties: false
+    COLLECTION:
+      description: TODO - Provide object schema
       type: object
-    plans:
-      description: A plan for an encounter between a member and a mentor
-      required:
-        - _id
-        - name
-      properties:
-        _id:
-          description: The unique identifier for an encounter plan
-          type: string
-        name:
-          description: The short name of the plan
-          pattern: ^[^\s]{0,32}$
-          type: string
-        description:
-          description: Description of the Plan
-          pattern: ^[ -~]{0,256}$
-          type: string
-        status:
-          description: The status of this plan
-          enum:
-            - Active
-            - Archived
-          type: string
-        checklist:
-          description: a checklist of planned observations
-          items:
-            description: >-
-              An prompt to uncover information, and possible options to
-              accelerate note taking
-            properties:
-              type:
-                description: The type of observation control, from an enumerated list
-                enum:
-                  - Radio
-                  - Check
-                  - Text
-                type: string
-              prompt:
-                description: The question asked
-                pattern: ^[ -~]{0,256}$
-                type: string
-              options:
-                description: >-
-                  The options for an answer (on radio and check type
-                  observations)
-                items:
-                  pattern: ^[ -~]{0,256}$
-                  type: string
-                type: array
-            type: object
-          type: array
-        lastSaved:
-          description: change tracking breadcrumb
-          properties:
-            fromIp:
-              description: Http Request remote IP address
-              pattern: >-
-                ^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$
-              type: string
-            byUser:
-              description: UUID Of User
-              type: string
-            atTime:
-              description: The date-time when last updated
-              type: string
-            correlationId:
-              description: The logging correlation ID of the update transaction
-              type: string
-          additionalProperties: false
-          type: object
-      additionalProperties: false
-      type: object
-    config:
+
+    Config:
       type: object
       properties:
         apiVersion:
+          description: Semantic Version Number
           type: string
-          description: Symantic Version Number
         configItems:
           type: array
           items:
             type: object
-            properties: 
+            properties:
               name:
+                type: string
                 description: Conf Item Name (Env Var Name, File Name)
-                type: string
               value:
+                type: string
                 description: The value for that config item
-                type: string
               from:
-                description: Where the value was found
                 type: string
+                description: Where the value was found
                 enum:
                   - default
                   - environment
                   - file
-        versions: 
-          type: array
-          items:
-            type: object
-            properties:
-              _id: 
-                description: Collection Version Document ID
-                type: string
-              collectionName: 
-                description: Mongodb Collection name
-                type: string
-              currentVersion:
-                description: Schema Version for the collection
-                type: string
-        enumerators: 
-          type: object
-        mentors:
-          description: List of all members with role Mentor
-          type: array
-          items:
-            type: object
-            properties: 
-              ID:
-                description: MongoDB _id
-                type: string
-              name:
-                description: Name
-                type: string      
-        partners:
-          description: List of all partners
-          type: array
-          items:
-            type: object
-            properties: 
-              ID:
-                description: MongoDB _id
-                type: string
-              name:
-                description: Name
-                type: string 
