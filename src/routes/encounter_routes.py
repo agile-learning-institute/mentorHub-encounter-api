@@ -17,7 +17,7 @@ def create_encounter_routes():
             breadcrumb = create_breadcrumb()
             token = create_token()
             data = request.get_json()
-            encounter = encounterService.post_encounter(data, token, breadcrumb)
+            encounter = encounterService.create_encounter(data, token, breadcrumb)
             logger.info(f"Get encounter Successful {breadcrumb}")
             return jsonify(encounter), 200
         except Exception as e:
@@ -28,10 +28,9 @@ def create_encounter_routes():
     @encounter_routes.route('/<string:id>', methods=['GET'])
     def get_encounter(id):
         try:
-            breadcrumb = create_breadcrumb()
             token = create_token()
-            encounter = encounterService.get_encounter(id, token, breadcrumb)
-            logger.info(f"Get encounter Successful {breadcrumb}")
+            encounter = encounterService.get_encounter(id, token)
+            logger.info(f"Get encounter Successful")
             return jsonify(encounter), 200
         except Exception as e:
             logger.warning(f"A processing error occurred {e}")

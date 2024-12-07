@@ -41,12 +41,12 @@ class Config:
         self.api_version = "1.0." + self._get_config_value("BUILT_AT", "LOCAL", False)
         self._config_folder = self._get_config_value("CONFIG_FOLDER", "/opt/mentorhub-encounter-api", False)
         self._port = int(self._get_config_value("PORT", "8088", False))
-        self._connection_string = self._get_config_value("CONNECTION_STRING", "mongodb://mongodb:27017/?replicaSet=rs0", False)
-        self._db_name = self._get_config_value("DB_NAME", "mentorHub", False)
         self._version_collection_name = self._get_config_value("VERSION_COLLECTION_NAME", "msmCurrentVersions", False)
         self._enumerators_collection_name = self._get_config_value("ENUMERATORS_COLLECTION_NAME", "enumerators", False)
         self._encounters_collection_name = self._get_config_value("ENCOUNTERS_COLLECTION_NAME", "encounters", False)
         self._plans_collection_name = self._get_config_value("PLANS_COLLECTION_NAME", "plans", False)
+        self._connection_string = self._get_config_value("CONNECTION_STRING", "mongodb://mongodb:27017/?replicaSet=rs0", True)
+        self._db_name = self._get_config_value("DB_NAME", "mentorHub", False)
         
         logger.info(f"Configuration Initialized: {self.config_items}")
             
@@ -86,23 +86,17 @@ class Config:
     def get_enumerators_collection_name(self):
         return self._enumerators_collection_name
 
-    def get_connection_string(self):
-        return self._connection_string
-
-    def get_db_name(self):
-        return self._db_name
-
-    def get_version_collection_name(self):
-        return self._version_collection_name
-
-    def get_enumerators_collection_name(self):
-        return self._enumerators_collection_name
-
     def get_encounters_collection_name(self):
         return self._encounters_collection_name
 
     def get_plans_collection_name(self):
         return self._plans_collection_name
+
+    def get_connection_string(self):
+        return self._connection_string
+
+    def get_db_name(self):
+        return self._db_name
 
     # Serializer
     def to_dict(self):

@@ -36,7 +36,7 @@ class MongoIO:
             logger.info("Connected to MongoDB")
         except Exception as e:
             logger.fatal(f"Failed to connect to MongoDB: {e} - exiting")
-            sys.exit(1)
+            sys.exit(1) # fail fast 
 
     def disconnect(self):
         """Disconnect from MongoDB."""
@@ -48,7 +48,7 @@ class MongoIO:
                 logger.info("Disconnected from MongoDB")
         except Exception as e:
             logger.fatal(f"Failed to disconnect from MongoDB: {e} - exiting")
-            sys.exit(1)
+            sys.exit(1) # fail fast 
       
     def _load_versions(self):
         """Load the versions collection into memory."""
@@ -60,13 +60,13 @@ class MongoIO:
             logger.info(f"{len(versions)} Versions Loaded.")
         except Exception as e:
             logger.fatal(f"Failed to get or load versions: {e} - exiting")
-            sys.exit(1)
+            sys.exit(1) # fail fast 
 
     def _load_enumerators(self):
         """Load the enumerators collection into memory."""
         if len(config.versions) == 0:
             logger.fatal("No Versions to load Enumerators from - exiting")
-            sys.exit(1)
+            sys.exit(1) # fail fast 
         
         try: 
             # Get the enumerators version from the curriculum version number.
@@ -84,68 +84,53 @@ class MongoIO:
             # Fail Fast if not found - critical error
             if not enumerations:
                 logger.fatal(f"Enumerators not found for version: {config.get_encounters_collection_name()}:{the_version_string}")
-                sys.exit(1)
+                sys.exit(1) # fail fast 
     
             config.enumerators = enumerations['enumerators']
         except Exception as e:
             logger.fatal(f"Failed to get or load enumerators: {e} - exiting")
-            sys.exit(1)
+            sys.exit(1) # fail fast 
 
-    def get_member_id(self, encounter_id):
-        encounter = self.get_encounter(encounter_id)
-        return encounter.personId
-    
-    def get_mentor_id(self, encounter_id):
-        encounter = self.get_encounter(encounter_id)
-        return encounter.mentorId
-    
-    def get_encounter(self, encounter_id):
-        """Retrieve a encounter by ID."""
+    def get_document(self, collection_name, document_id):
+        """Retrieve a document by ID."""
         if not self.connected:
             return None
 
         try:
-            # Get the encounter document
-            encounter_collection = self.db.get_collection(config.get_encounters_collection_name())
-            encounter_object_id = ObjectId(encounter_id)
-            encounter = encounter_collection.find_one({"_id": encounter_object_id})
-            return encounter | {}
+            # Get the document
+            collection = self.db.get_collection(collection_name)
+            document_object_id = ObjectId(document_id)
+            document = collection.find_one({"_id": document_object_id})
+            return document | {}
         except Exception as e:
-            logger.error(f"Failed to get encounter: {e}")
+            logger.error(f"Failed to get document: {e}")
             raise
 
-    def create_encounter(self, person_id, mentor_id, plan_id, breadcrumb):
+    def create_document(self, collection_name, document):
         """Create a curriculum by ID."""
         if not self.connected: return None
 
         try:
-            encounter_data = {
-                "person_id": ObjectId(person_id),
-                "mentor_id": ObjectId(mentor_id),
-                "plan_id": ObjectId(plan_id),
-                "status": "Active",
-                "lastSaved": breadcrumb
-            }
-            encounter_collection = self.db.get_collection(config.get_encounters_collection_name())
-            result = encounter_collection.insert_one(encounter_data)
+            document_collection = self.db.get_collection(collection_name)
+            result = document_collection.insert_one(document)
             return str(result.inserted_id)
         except Exception as e:
-            logger.error(f"Failed to create curriculum: {e}")
+            logger.error(f"Failed to create document: {e}")
             raise   
 
-    def update_encounter(self, encounter_id, data):
+    def update_document(self, collection_name, document_id, data):
         """Update a encounter."""
         if not self.connected: return None
 
         try:
-            encounter_collection = self.db.get_encounter(config.get_encounters_collection_name())
-            encounter_object_id = ObjectId(encounter_id)
+            document_collection = self.db.get_document(document_id)
+            document_object_id = ObjectId(document_id)
             
-            match = {"_id": encounter_object_id}
+            match = {"_id": document_object_id}
             pipeline = {"$set": data}            
-            result = encounter_collection.update_one(match, pipeline)
+            result = document_collection.update_one(match, pipeline)
         except Exception as e:
-            logger.error(f"Failed to update encounter: {e}")
+            logger.error(f"Failed to update document: {e}")
             raise
 
         return result.modified_count

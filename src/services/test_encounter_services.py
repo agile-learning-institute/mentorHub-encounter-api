@@ -1,35 +1,112 @@
-import copy
-from datetime import datetime, timezone
 import unittest
-from unittest.mock import patch
-
+from unittest.mock import patch, MagicMock
 from bson import ObjectId
+from datetime import datetime, timezone
 from src.services.encounter_services import encounterService
-from src.utils.mongo_io import MongoIO
 
-class TestencounterService(unittest.TestCase):
-    
-    def setUp(self):    
-        self.maxDiff = None
 
-        # Setup Test Data
-        token = {}
-        # TODO token for RBAC testing
-        # TODO Additional test data as needed
-        
-    @patch('src.services.encounter_services.MongoIO')
-    def test_create_encounter_success(self, mock_mongo_io):
-        # Mock the MongoIO methods
-        mock_instance = mock_mongo_io.return_value
-        mock_instance.get_encounter.return_value = self.test_encounter_one
-        mock_instance.get_mentor.return_value = "eeee00000000000000000001"
+class TestEncounterService(unittest.TestCase):
 
-        encounter = encounterService.get_or_create_encounter("eeee00000000000000000001", self.token, self.breadcrumb)
-        mock_instance.get_encounter.assert_called_once_with("eeee00000000000000000001")
-        self.assertEqual(encounter, self.test_encounter_one)
-        mock_instance.reset_mock()
+    @patch('src.utils.mongo_io.MongoIO.get_document')
+    @patch('src.utils.mongo_io.MongoIO.create_document')
+    @patch('src.config.config.Config.get_encounters_collection_name', return_value='encounters')
+    def test_create_encounter(self, mock_get_collection_name, mock_create_document, mock_get_document):
+        mock_create_document.return_value = "mock_encounter_id"
+        mock_get_document.return_value = {"id": "mock_encounter_id", "status": "Active"}
 
-    # TODO Write more tests
+        data = {
+            "person_id": str(ObjectId()),
+            "mentor_id": str(ObjectId()),
+            "plan_id": str(ObjectId())
+        }
+        token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
+        breadcrumb = {
+            "atTime": datetime.now(timezone.utc),
+            "byUser": ObjectId(),
+            "fromIp": "127.0.0.1",
+            "correlationId": "test-correlation-id"
+        }
+
+        result = encounterService.create_encounter(data, token, breadcrumb)
+
+        # Assertions for MongoIO interactions
+        mock_create_document.assert_called_once_with(
+            "encounters",
+            {
+                "person_id": ObjectId(data["person_id"]),
+                "mentor_id": ObjectId(data["mentor_id"]),
+                "plan_id": ObjectId(data["plan_id"]),
+                "status": "Active",
+                "lastSaved": breadcrumb
+            }
+        )
+        mock_get_document.assert_called_once_with("mock_encounter_id")
+        self.assertEqual(result, {"id": "mock_encounter_id", "status": "Active"})
+
+    @patch('src.utils.mongo_io.MongoIO.get_document')
+    def test_get_encounter(self, mock_get_document):
+        mock_get_document.side_effect = [
+            {"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())},
+            {"id": "mock_encounter_id", "status": "Active"}
+        ]
+
+        encounter_id = "mock_encounter_id"
+        token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
+        breadcrumb = {
+            "atTime": datetime.now(timezone.utc),
+            "byUser": ObjectId(),
+            "fromIp": "127.0.0.1",
+            "correlationId": "test-correlation-id"
+        }
+
+        result = encounterService.get_encounter(encounter_id, token)
+
+        # Assertions for MongoIO interactions
+        mock_get_document.assert_any_call(encounter_id)
+        self.assertEqual(result, {"id": "mock_encounter_id", "status": "Active"})
+
+    @patch('src.utils.mongo_io.MongoIO.get_document')
+    @patch('src.utils.mongo_io.MongoIO.update_document')
+    def test_update_encounter(self, mock_update_document, mock_get_document):
+        mock_get_document.side_effect = [{"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}]
+        mock_update_document.side_effect = [{"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}]
+
+        encounter_id = "mock_encounter_id"
+        patch_data = {"status": "Updated"}
+        token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
+        breadcrumb = {
+            "atTime": datetime.now(timezone.utc),
+            "byUser": ObjectId(),
+            "fromIp": "127.0.0.1",
+            "correlationId": "test-correlation-id"
+        }
+
+        result = encounterService.update_encounter(encounter_id, patch_data, token, breadcrumb)
+
+        # Assertions for MongoIO interactions
+        mock_update_document.assert_called_once_with(
+            "encounters"
+            encounter_id,
+            {"status": "Updated", "lastSaved": breadcrumb}
+        )
+        mock_get_document.assert_any_call(encounter_id)
+        self.assertEqual(result, {"id": "mock_encounter_id", "status": "Updated"})
+
+    def test_check_user_access_staff(self):
+        data = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId())}
+        token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
+        try:
+            encounterService._check_user_access(data, token)
+        except Exception:
+            self.fail("_check_user_access raised Exception unexpectedly!")
+
+    def test_check_user_access_access_denied(self):
+        data = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId())}
+        token = {"user_id": str(ObjectId()), "roles": ["Member"]}
+        with self.assertRaises(Exception) as context:
+            encounterService._check_user_access(data, token)
+        self.assertEqual(str(context.exception), "Access Denied")
+
 
 if __name__ == '__main__':
     unittest.main()
