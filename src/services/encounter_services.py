@@ -1,4 +1,4 @@
-from src.config.config import config 
+from src.config.Config import config 
 from src.utils.mongo_io import mongoIO
 from datetime import datetime
 from bson import ObjectId
@@ -17,7 +17,7 @@ class encounterService:
         if "Staff" in token["roles"]: return
         
         # Members can access their own encounters
-        if "Member" in token["roles"] and data.person_id == token["user_id"]: return
+        if "Member" in token["roles"] and data["person_id"] == token["user_id"]: return
         
         # Mentors can access their apprentices encounters
         if "Mentor" in token["roles"]:

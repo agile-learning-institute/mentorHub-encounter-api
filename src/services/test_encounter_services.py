@@ -9,7 +9,7 @@ class TestEncounterService(unittest.TestCase):
 
     @patch('src.utils.mongo_io.MongoIO.get_document')
     @patch('src.utils.mongo_io.MongoIO.create_document')
-    @patch('src.config.config.Config.get_encounters_collection_name', return_value='encounters')
+    @patch('src.config.Config.Config.get_encounters_collection_name', return_value='encounters')
     def test_create_encounter(self, mock_get_collection_name, mock_create_document, mock_get_document):
         mock_create_document.return_value = "mock_encounter_id"
         mock_get_document.return_value = {"id": "mock_encounter_id", "status": "Active"}
@@ -45,10 +45,8 @@ class TestEncounterService(unittest.TestCase):
 
     @patch('src.utils.mongo_io.MongoIO.get_document')
     def test_get_encounter(self, mock_get_document):
-        mock_get_document.side_effect = [
-            {"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())},
-            {"id": "mock_encounter_id", "status": "Active"}
-        ]
+        test_document = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}
+        mock_get_document.side_effect = [test_document]
 
         encounter_id = "mock_encounter_id"
         token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
@@ -62,14 +60,15 @@ class TestEncounterService(unittest.TestCase):
         result = encounterService.get_encounter(encounter_id, token)
 
         # Assertions for MongoIO interactions
-        mock_get_document.assert_any_call(encounter_id)
-        self.assertEqual(result, {"id": "mock_encounter_id", "status": "Active"})
+        mock_get_document.assert_called_with("encounters", encounter_id)
+        self.assertEqual(result, test_document)
 
     @patch('src.utils.mongo_io.MongoIO.get_document')
     @patch('src.utils.mongo_io.MongoIO.update_document')
     def test_update_encounter(self, mock_update_document, mock_get_document):
-        mock_get_document.side_effect = [{"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}]
-        mock_update_document.side_effect = [{"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}]
+        test_document = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}
+        mock_get_document.side_effect = [test_document]
+        mock_update_document.side_effect = [test_document]
 
         encounter_id = "mock_encounter_id"
         patch_data = {"status": "Updated"}
@@ -85,12 +84,12 @@ class TestEncounterService(unittest.TestCase):
 
         # Assertions for MongoIO interactions
         mock_update_document.assert_called_once_with(
-            "encounters"
+            "encounters",
             encounter_id,
             {"status": "Updated", "lastSaved": breadcrumb}
         )
         mock_get_document.assert_any_call(encounter_id)
-        self.assertEqual(result, {"id": "mock_encounter_id", "status": "Updated"})
+        self.assertEqual(result, test_document)
 
     def test_check_user_access_staff(self):
         data = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId())}

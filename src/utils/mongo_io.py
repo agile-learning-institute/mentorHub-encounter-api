@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 from bson import ObjectId 
 from pymongo import MongoClient
-from src.config.config import config
+from src.config.Config import config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
