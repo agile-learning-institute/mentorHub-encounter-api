@@ -33,7 +33,7 @@ def create_encounter_routes():
             logger.info(f"Get encounter Successful")
             return jsonify(encounter), 200
         except Exception as e:
-            logger.warning(f"A processing error occurred {e}")
+            logger.warning(f"Get Encounter, a processing error occurred {e}")
             return jsonify({"error": "A processing error occurred"}), 500
 
     # PATCH /api/encounter/{id} - Update a encounter

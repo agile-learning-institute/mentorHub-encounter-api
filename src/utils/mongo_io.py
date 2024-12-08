@@ -136,7 +136,7 @@ class MongoIO:
         
         except Exception as e:
             logger.error(f"Failed to update document: {e}")
-            raise
+            raise 
 
         return self.get_document(collection_name, document_id)
 
@@ -151,7 +151,7 @@ class MongoIO:
             result = document_collection.delete_one({"_id": document_object_id})
         except Exception as e:
             logger.error(f"Failed to delete document: {e}")
-            raise
+            raise 
         
         return result.deleted_count
     

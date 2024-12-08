@@ -107,15 +107,17 @@ curl http://localhost:8090/api/encounter/eeee00000000000000000001/
 ### Test add a Document 
 
 ```bash
-curl -X POST http://localhost:8090/api/encounter/eeee00000000000000000001/ \
-     -d '{"date":{"$date":"1/1/2024 0:00:00"},"personId":{"$oid":"aaaa00000000000000000004"},"mentorId":{"$oid":"aaaa00000000000000000027"},"planId":{"$oid":"EEFF00000000000000000002"},"status":"Active"}'
+curl -X POST localhost:8088/api/encounter/ \
+-H "Content-Type: application/json" \
+-d '{"date":"2024-12-07 00:00:00","mentorId":"aaaa00000000000000000005","personId":"aaaa00000000000000000024","planId":"eeff00000000000000000004","status":"Active"}'
 ```
 
 ### Test update a Document
 
 ```bash
-curl -X PATCH http://localhost:8090/api/encounter/eeee00000000000000000001/ \
-     -d '{"observations":[{"type":"Check","prompt":"Introductions","options":["Mike","Institute"],"values":[]}}'
+curl -X PATCH localhost:8088/api/encounter/eeee00000000000000000001 \
+-H "Content-Type: application/json" \
+-d '{"status":"Archived"}'
 ```
 
 ## Observability and Configuration

@@ -14,9 +14,9 @@ class TestEncounterService(unittest.TestCase):
         mock_get_document.return_value = {"id": "mock_encounter_id", "status": "Active"}
 
         data = {
-            "person_id": str(ObjectId()),
-            "mentor_id": str(ObjectId()),
-            "plan_id": str(ObjectId())
+            "personId": str(ObjectId()),
+            "mentorId": str(ObjectId()), 
+            "planId": str(ObjectId())
         }
         token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
         breadcrumb = {
@@ -32,9 +32,9 @@ class TestEncounterService(unittest.TestCase):
         mock_create_document.assert_called_once_with(
             "encounters",
             {
-                "person_id": ObjectId(data["person_id"]),
-                "mentor_id": ObjectId(data["mentor_id"]),
-                "plan_id": ObjectId(data["plan_id"]),
+                "personId": ObjectId(data["personId"]),
+                "mentorId": ObjectId(data["mentorId"]),
+                "planId": ObjectId(data["planId"]),
                 "status": "Active",
                 "lastSaved": breadcrumb
             }
@@ -44,7 +44,7 @@ class TestEncounterService(unittest.TestCase):
 
     @patch('src.utils.mongo_io.MongoIO.get_document')
     def test_get_encounter(self, mock_get_document):
-        test_document = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}
+        test_document = {"personId": str(ObjectId()), "mentorId": str(ObjectId()), "planId": str(ObjectId())}
         mock_get_document.side_effect = [test_document]
 
         encounter_id = "mock_encounter_id"
@@ -65,7 +65,7 @@ class TestEncounterService(unittest.TestCase):
     @patch('src.utils.mongo_io.MongoIO.get_document')
     @patch('src.utils.mongo_io.MongoIO.update_document')
     def test_update_encounter(self, mock_update_document, mock_get_document):
-        test_document = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId()), "plan_id": str(ObjectId())}
+        test_document = {"personId": str(ObjectId()), "mentorId": str(ObjectId()), "plan_id": str(ObjectId())}
         mock_get_document.side_effect = [test_document]
         mock_update_document.side_effect = [test_document]
 
@@ -91,7 +91,7 @@ class TestEncounterService(unittest.TestCase):
         self.assertEqual(result, test_document)
 
     def test_check_user_access_staff(self):
-        data = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId())}
+        data = {"personId": str(ObjectId()), "mentor_id": str(ObjectId())}
         token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
         try:
             encounterService._check_user_access(data, token)
@@ -99,7 +99,7 @@ class TestEncounterService(unittest.TestCase):
             self.fail("_check_user_access raised Exception unexpectedly!")
 
     def test_check_user_access_access_denied(self):
-        data = {"person_id": str(ObjectId()), "mentor_id": str(ObjectId())}
+        data = {"personId": str(ObjectId()), "mentor_id": str(ObjectId())}
         token = {"user_id": str(ObjectId()), "roles": ["Member"]}
         with self.assertRaises(Exception) as context:
             encounterService._check_user_access(data, token)
