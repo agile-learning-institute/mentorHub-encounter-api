@@ -9,8 +9,7 @@ class TestEncounterService(unittest.TestCase):
 
     @patch('src.utils.mongo_io.MongoIO.get_document')
     @patch('src.utils.mongo_io.MongoIO.create_document')
-    @patch('src.config.Config.Config.get_encounters_collection_name', return_value='encounters')
-    def test_create_encounter(self, mock_get_collection_name, mock_create_document, mock_get_document):
+    def test_create_encounter(self, mock_create_document, mock_get_document):
         mock_create_document.return_value = "mock_encounter_id"
         mock_get_document.return_value = {"id": "mock_encounter_id", "status": "Active"}
 

@@ -129,12 +129,16 @@ class MongoIO:
             
             match = {"_id": document_object_id}
             pipeline = {"$set": data}            
-            result = document_collection.update_one(match, pipeline)
+            updated_count = document_collection.update_one(match, pipeline)
+            
+            if updated_count == 0:
+                raise f"Document Not Found {document_id}"
+        
         except Exception as e:
             logger.error(f"Failed to update document: {e}")
             raise
 
-        return result.modified_count
+        return self.get_document(collection_name, document_id)
 
     def delete_document(self, collection_name, document_id):
         """Delete a document."""
