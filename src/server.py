@@ -9,7 +9,7 @@ import sys
 import signal
 from flask import Flask
 from prometheus_flask_exporter import PrometheusMetrics
-from src.config.Config import config
+from src.config.config import config
 from src.utils.mongo_io import MongoIO
 from src.routes.encounter_routes import create_encounter_routes
 from src.routes.config_routes import create_config_routes

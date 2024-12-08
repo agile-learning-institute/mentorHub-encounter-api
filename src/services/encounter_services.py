@@ -1,4 +1,4 @@
-from src.config.Config import config 
+from src.config.config import config 
 from src.utils.mongo_io import mongoIO
 from datetime import datetime
 from bson import ObjectId

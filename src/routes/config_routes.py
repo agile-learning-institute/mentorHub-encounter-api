@@ -3,7 +3,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 from flask import Blueprint, jsonify
-from src.config.Config import config 
+from src.config.config import config 
 
 # Define the Blueprint for config routes
 def create_config_routes():
@@ -17,7 +17,7 @@ def create_config_routes():
             logger.info(f"Get Config Success")
             return jsonify(config.to_dict()), 200
         except Exception as e:
-            logger.warn(f"Get Config Error has occured: {e}")
+            logger.warn(f"Get Config Error has occurred: {e}")
             return jsonify({"error": "A processing error occurred"}), 500
         
     # Ensure the Blueprint is returned correctly

@@ -1,5 +1,5 @@
 import unittest
-from src.config.Config import config
+from src.config.config import config
 
 class TestConfigDefaults(unittest.TestCase):
 

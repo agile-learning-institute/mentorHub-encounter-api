@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 from bson import ObjectId 
 from pymongo import MongoClient
-from src.config.Config import config
+from src.config.config import config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ class MongoIO:
     def _connect(self):
         """Connect to MongoDB."""
         try:
-            self.client = MongoClient(config.get_connection_string(), serverSelectionTimeoutMS=2000)
+            self.client = MongoClient(config.get_connection_string(), serverSelectionTimeoutMS=2000, socketTimeoutMS=5000)
             self.client.admin.command('ping')  # Force connection
             self.db = self.client.get_database(config.get_db_name())
             self.connected = True
@@ -87,6 +87,7 @@ class MongoIO:
                 sys.exit(1) # fail fast 
     
             config.enumerators = enumerations['enumerators']
+            logger.info(f"{len(enumerations)} Enumerators Loaded.")
         except Exception as e:
             logger.fatal(f"Failed to get or load enumerators: {e} - exiting")
             sys.exit(1) # fail fast 
@@ -123,7 +124,7 @@ class MongoIO:
         if not self.connected: return None
 
         try:
-            document_collection = self.db.get_document(document_id)
+            document_collection = self.db.get_collection(collection_name)
             document_object_id = ObjectId(document_id)
             
             match = {"_id": document_object_id}
@@ -135,6 +136,21 @@ class MongoIO:
 
         return result.modified_count
 
+    def delete_document(self, collection_name, document_id):
+        """Delete a document."""
+        if not self.connected:
+            return None
+
+        try:
+            document_collection = self.db[collection_name]
+            document_object_id = ObjectId(document_id)
+            result = document_collection.delete_one({"_id": document_object_id})
+        except Exception as e:
+            logger.error(f"Failed to delete document: {e}")
+            raise
+        
+        return result.deleted_count
+    
     # Singleton Getter
     @staticmethod
     def get_instance():

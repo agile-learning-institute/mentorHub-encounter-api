@@ -1,6 +1,6 @@
 import unittest
 import os
-from src.config.Config import config
+from src.config.config import config
 
 class TestConfigEnvironment(unittest.TestCase):
 
