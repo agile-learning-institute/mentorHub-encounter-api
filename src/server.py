@@ -1,7 +1,7 @@
 # Initialize Logging
 import logging
 
-from src.utils.ejson_encoder import MongoJSONEncoder
+from src.routes.ejson_encoder import MongoJSONEncoder
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
