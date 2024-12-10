@@ -1,5 +1,5 @@
 version: "1.1"
-name: COLLECTION API Check
+name: encounter API Check
 env:
   host: localhost:8088
 config:
@@ -42,19 +42,101 @@ tests:
           check:
             status: /200/
 
-  COLLECTION:
-    name: Test get COLLECTION 
+  encounter:
+    name: Test get encounter 
     steps:
-      - name: GET an existing COLLECTION
+      - name: GET an existing encounter
         http:
-          url: http://${{env.host}}/api/COLLECTION/TEST_ID
+          url: http://${{env.host}}/api/encounter/eeee00000000000000000002
           method: GET
           headers:
             Content-Type: application/json          
           check:
             status: /200/
             json.equals:
-              _id: TEST_ID
-              TODO: Test Data
+              _id: eeee00000000000000000002
+              date: 1/8/2024 0:00:00
+              personId: aaaa00000000000000000004
+              mentorId: aaaa00000000000000000027
+              planId: EEFF00000000000000000003
+              status: Active
+              observations:
+              - type: Check
+                prompt: Review
+                options:
+                - Agile Manifesto
+                - Craftsmanship Manifesto
+                - Design Thinking
+                - Toolkit
+                - Odin
+                - Engineerkit
+                values: []
+              - type: Radio
+                prompt: Choose One
+                options:
+                - One
+                - Two
+                - Three
+                values: []
+              - type: Text
+                prompt: What are your goals (6-month, 1-yr)
+                options: []
+                values: []
+              - type: Text
+                prompt: Commitment hrs/week
+                options: []
+                values: []
+              - type: Check
+                prompt: Agreements
+                options:
+                - Now Scope
+                - Recurring Invite
 
-      - name: TODO - More Tests
+      - name: Create a encounter
+        http:
+          url: http://${{env.host}}/api/encounter/
+          method: POST
+          headers:
+            Content-Type: application/json          
+          json: 
+            date: 2024-12-21 00:00:00
+            personId: aaaa00000000000000000004
+            mentorId: aaaa00000000000000000027
+            planId: EEFF00000000000000000003
+          captures:
+            theId:
+              jsonpath: $._id                      
+          check:
+            status: /200/
+            json.equals:
+            date: 2024-12-21 00:00:00
+            personId: aaaa00000000000000000004
+            mentorId: aaaa00000000000000000027
+            planId: EEFF00000000000000000003
+            lastUpdated: {}
+
+      - name: Update a encounter
+        http:
+          url: http://${{env.host}}/api/encounter/${{captures.theId}}
+          method: PATCH
+          headers:
+            Content-Type: application/json          
+          json:
+            observations:
+            - type: Text
+              prompt: What are your goals (6-month, 1-yr)
+              options: []
+              values: []
+          check:
+            status: /200/
+            json.equals:
+            date: 2024-12-21 00:00:00
+            personId: aaaa00000000000000000004
+            mentorId: aaaa00000000000000000027
+            planId: EEFF00000000000000000003
+            observations:
+            - type: Text
+              prompt: What are your goals (6-month, 1-yr)
+              options: []
+              values: []
+            lastUpdated: {}
