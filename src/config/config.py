@@ -104,8 +104,8 @@ class Config:
         return {
             "api_version": self.api_version,
             "config_items": self.config_items,
-            "versions": Config._decode_mongo_types(self.versions),
-            "enumerators": Config._decode_mongo_types(self.enumerators)
+            "versions": self.versions,
+            "enumerators": self.enumerators
         }    
 
     # Singleton Getter

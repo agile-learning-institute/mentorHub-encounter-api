@@ -4,7 +4,6 @@ from flask import Flask
 from src.routes.encounter_routes import create_encounter_routes
 from bson import ObjectId
 
-
 class TestEncounterRoutes(unittest.TestCase):
 
     def setUp(self):
