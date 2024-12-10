@@ -9,7 +9,7 @@ class TestConfigFiles(unittest.TestCase):
         cls.public_config_items = [
             "PORT", "DB_NAME",
             "VERSION_COLLECTION_NAME", "ENUMERATORS_COLLECTION_NAME", 
-            "ENCOUNTERS_COLLECTION_NAME", "PLANS_COLLECTION_NAME" 
+            "ENCOUNTERS_COLLECTION_NAME", "PLANS_COLLECTION_NAME", "PEOPLE_COLLECTION_NAME" 
         ]
         
         cls.secret_config_items = [
@@ -24,13 +24,14 @@ class TestConfigFiles(unittest.TestCase):
         del os.environ["CONFIG_FOLDER"]
 
     def test_file_properties_in_getters(self):
-        self.assertEqual(config.get_port(), 123456)
-        self.assertEqual(config.get_version_collection_name(), "123456")
-        self.assertEqual(config.get_enumerators_collection_name(), "123456")
-        self.assertEqual(config.get_encounters_collection_name(), "123456")
-        self.assertEqual(config.get_plans_collection_name(), "123456")
-        self.assertEqual(config.get_connection_string(), "123456")
-        self.assertEqual(config.get_db_name(), "123456")
+        self.assertEqual(config.PORT, 123456)
+        self.assertEqual(config.VERSION_COLLECTION_NAME, "123456")
+        self.assertEqual(config.ENUMERATORS_COLLECTION_NAME, "123456")
+        self.assertEqual(config.ENCOUNTERS_COLLECTION_NAME, "123456")
+        self.assertEqual(config.PLANS_COLLECTION_NAME, "123456")
+        self.assertEqual(config.PEOPLE_COLLECTION_NAME, "123456")
+        self.assertEqual(config.CONNECTION_STRING, "123456")
+        self.assertEqual(config.DB_NAME, "123456")
 
     def test_public_file_config_items(self):
         for item in self.public_config_items:

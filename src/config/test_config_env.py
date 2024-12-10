@@ -10,7 +10,7 @@ class TestConfigEnvironment(unittest.TestCase):
         cls.public_config_items = [
             "BUILT_AT", "CONFIG_FOLDER", "PORT", "DB_NAME",
             "VERSION_COLLECTION_NAME", "ENUMERATORS_COLLECTION_NAME", 
-            "ENCOUNTERS_COLLECTION_NAME", "PLANS_COLLECTION_NAME" 
+            "ENCOUNTERS_COLLECTION_NAME", "PLANS_COLLECTION_NAME", "PEOPLE_COLLECTION_NAME" 
         ]
         
         cls.secret_config_items = [
@@ -32,14 +32,15 @@ class TestConfigEnvironment(unittest.TestCase):
                 del os.environ[var]
 
     def test_environment_properties_in_getters(self):
-        self.assertEqual(config.get_config_folder(), "9999")
-        self.assertEqual(config.get_port(), 9999)
-        self.assertEqual(config.get_version_collection_name(), "9999")
-        self.assertEqual(config.get_enumerators_collection_name(), "9999")
-        self.assertEqual(config.get_encounters_collection_name(), "9999")
-        self.assertEqual(config.get_plans_collection_name(), "9999")
-        self.assertEqual(config.get_connection_string(), "9999")
-        self.assertEqual(config.get_db_name(), "9999")
+        self.assertEqual(config.CONFIG_FOLDER, "9999")
+        self.assertEqual(config.PORT, 9999)
+        self.assertEqual(config.VERSION_COLLECTION_NAME, "9999")
+        self.assertEqual(config.ENUMERATORS_COLLECTION_NAME, "9999")
+        self.assertEqual(config.ENCOUNTERS_COLLECTION_NAME, "9999")
+        self.assertEqual(config.PLANS_COLLECTION_NAME, "9999")
+        self.assertEqual(config.PEOPLE_COLLECTION_NAME, "9999")
+        self.assertEqual(config.CONNECTION_STRING, "9999")
+        self.assertEqual(config.DB_NAME, "9999")
 
     def test_environment_public_config_items(self):
         for item in self.public_config_items:

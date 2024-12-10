@@ -21,14 +21,15 @@ class Config:
             self.api_version = ""
 
             # Private properties
-            self._config_folder = "./"
-            self._port = 8088
-            self._connection_string = ""
-            self._db_name = ""
-            self._version_collection_name = ""
-            self._enumerators_collection_name = ""
-            self._encounters_collection_name = ""
-            self._plans_collection_name = ""
+            self.CONFIG_FOLDER = "./"
+            self.PORT = 8088
+            self.CONNECTION_STRING = ""
+            self.DB_NAME = ""
+            self.VERSION_COLLECTION_NAME = ""
+            self.ENUMERATORS_COLLECTION_NAME = ""
+            self.ENCOUNTERS_COLLECTION_NAME = ""
+            self.PLANS_COLLECTION_NAME = ""
+            self.PEOPLE_COLLECTION_NAME = ""
 
             # Initialize configuration
             self.initialize()
@@ -39,14 +40,15 @@ class Config:
         self.versions = []
         self.enumerators = {}
         self.api_version = "1.0." + self._get_config_value("BUILT_AT", "LOCAL", False)
-        self._config_folder = self._get_config_value("CONFIG_FOLDER", "/opt/mentorhub-encounter-api", False)
-        self._port = int(self._get_config_value("PORT", "8088", False))
-        self._version_collection_name = self._get_config_value("VERSION_COLLECTION_NAME", "msmCurrentVersions", False)
-        self._enumerators_collection_name = self._get_config_value("ENUMERATORS_COLLECTION_NAME", "enumerators", False)
-        self._encounters_collection_name = self._get_config_value("ENCOUNTERS_COLLECTION_NAME", "encounters", False)
-        self._plans_collection_name = self._get_config_value("PLANS_COLLECTION_NAME", "plans", False)
-        self._connection_string = self._get_config_value("CONNECTION_STRING", "mongodb://mongodb:27017/?replicaSet=rs0", True)
-        self._db_name = self._get_config_value("DB_NAME", "mentorHub", False)
+        self.CONFIG_FOLDER = self._get_config_value("CONFIG_FOLDER", "/opt/mentorhub-encounter-api", False)
+        self.PORT = int(self._get_config_value("PORT", "8088", False))
+        self.VERSION_COLLECTION_NAME = self._get_config_value("VERSION_COLLECTION_NAME", "msmCurrentVersions", False)
+        self.ENUMERATORS_COLLECTION_NAME = self._get_config_value("ENUMERATORS_COLLECTION_NAME", "enumerators", False)
+        self.ENCOUNTERS_COLLECTION_NAME = self._get_config_value("ENCOUNTERS_COLLECTION_NAME", "encounters", False)
+        self.PLANS_COLLECTION_NAME = self._get_config_value("PLANS_COLLECTION_NAME", "plans", False)
+        self.PEOPLE_COLLECTION_NAME = self._get_config_value("PEOPLE_COLLECTION_NAME", "people", False)
+        self.CONNECTION_STRING = self._get_config_value("CONNECTION_STRING", "mongodb://mongodb:27017/?replicaSet=rs0", True)
+        self.DB_NAME = self._get_config_value("DB_NAME", "mentorHub", False)
         
         logger.info(f"Configuration Initialized: {self.config_items}")
             
@@ -56,7 +58,7 @@ class Config:
         from_source = "default"
 
         # Check for config file first
-        file_path = Path(self._config_folder) / name
+        file_path = Path(self.CONFIG_FOLDER) / name
         if file_path.exists():
             value = file_path.read_text().strip()
             from_source = "file"
@@ -72,31 +74,6 @@ class Config:
             "from": from_source
         })
         return value
-
-    # Simple Getters
-    def get_port(self):
-        return self._port
-
-    def get_config_folder(self):
-        return self._config_folder
-
-    def get_version_collection_name(self):
-        return self._version_collection_name
-
-    def get_enumerators_collection_name(self):
-        return self._enumerators_collection_name
-
-    def get_encounters_collection_name(self):
-        return self._encounters_collection_name
-
-    def get_plans_collection_name(self):
-        return self._plans_collection_name
-
-    def get_connection_string(self):
-        return self._connection_string
-
-    def get_db_name(self):
-        return self._db_name
 
     # Serializer
     def to_dict(self):
