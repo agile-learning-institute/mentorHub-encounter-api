@@ -10,12 +10,12 @@ logger = logging.getLogger(__name__)
 def create_people_routes():
     people_routes = Blueprint('people_routes', __name__)
 
-    # GET /api/people - Return TODO
+    # GET /api/people - Return a list of people
     @people_routes.route('/', methods=['GET'])
     def get_people():
         try:
             result = PersonService.get_people() # TODO: Pass Query Parameter
-            return jsonify(config.to_dict()), 200
+            return jsonify(result), 200
         except Exception as e:
             logger.warning(f"Get People Error has occurred: {e}")
             return jsonify({"error": "A processing error occurred"}), 500
