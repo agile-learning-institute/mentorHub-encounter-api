@@ -14,6 +14,7 @@ class TestMongoIO(unittest.TestCase):
         MongoIO._instance = None
         mongo_io = MongoIO.get_instance()
         mongo_io.initialize()
+        print(f"Setup Connected: {mongo_io.connected}")
 
     def tearDown(self):
         mongo_io = MongoIO.get_instance()
@@ -41,14 +42,14 @@ class TestMongoIO(unittest.TestCase):
             "planId": ObjectId("eeff00000000000000000002"),
             "status": "Active"
         }
-        self.test_id = mongoIO.create_document("encounters", test_data)
+        mongo_io = MongoIO.get_instance()
+        self.test_id = mongo_io.create_document("encounters", test_data)
         encounter_id_str = str(self.test_id)
-        print(f"Encounter ID String {encounter_id_str}")
         
         self.assertEqual(encounter_id_str, str(self.test_id))
 
         # Retrieve the document
-        encounter = mongoIO.get_document("encounters", encounter_id_str)
+        encounter = mongo_io.get_document("encounters", encounter_id_str)
         self.assertIsInstance(encounter, dict)
         self.assertIsInstance(encounter["_id"], ObjectId)
         self.assertEqual(encounter["personId"], ObjectId("aaaa00000000000000000004"))
@@ -59,7 +60,7 @@ class TestMongoIO(unittest.TestCase):
         test_update = {
             "personId": ObjectId("aaaa00000000000000011111")
         }
-        encounter = mongoIO.update_document("encounters", encounter_id_str, test_update)
+        encounter = mongo_io.update_document("encounters", encounter_id_str, test_update)
         print(f"Update Returned {encounter}")
         self.assertIsInstance(encounter, dict)
         self.assertIsInstance(encounter["_id"], ObjectId)

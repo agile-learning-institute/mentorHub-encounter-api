@@ -33,7 +33,7 @@ class MongoIO:
             self.client.admin.command('ping')  # Force connection
             self.db = self.client.get_database(config.get_db_name())
             self.connected = True
-            logger.info("Connected to MongoDB")
+            logger.info(f"Connected to MongoDB")
         except Exception as e:
             logger.fatal(f"Failed to connect to MongoDB: {e} - exiting")
             sys.exit(1) # fail fast 
@@ -94,8 +94,7 @@ class MongoIO:
 
     def get_document(self, collection_name, document_id):
         """Retrieve a document by ID."""
-        if not self.connected:
-            return None
+        if not self.connected: return None
 
         try:
             # Get the document
@@ -110,7 +109,7 @@ class MongoIO:
     def create_document(self, collection_name, document):
         """Create a curriculum by ID."""
         if not self.connected: return None
-
+        
         try:
             document_collection = self.db.get_collection(collection_name)
             result = document_collection.insert_one(document)
@@ -142,8 +141,7 @@ class MongoIO:
 
     def delete_document(self, collection_name, document_id):
         """Delete a document."""
-        if not self.connected:
-            return None
+        if not self.connected: return None
 
         try:
             document_collection = self.db[collection_name]
