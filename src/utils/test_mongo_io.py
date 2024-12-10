@@ -66,6 +66,53 @@ class TestMongoIO(unittest.TestCase):
         self.assertIsInstance(encounter["_id"], ObjectId)
         self.assertEqual(encounter["personId"], ObjectId("aaaa00000000000000011111"))
         
+    def test_get_all_full_documents(self):
+        mongo_io = MongoIO.get_instance()
+        result = mongo_io.get_documents("enumerators")
+        
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[0]["name"], "Enumerations")
+        self.assertEqual(result[0]["version"], 0)
+        self.assertEqual(result[0]["status"], "Depricated")
 
+    def test_get_some_full_documents(self):
+        mongo_io = MongoIO.get_instance()
+        match = {"version":1}
+        result = mongo_io.get_documents("enumerators", match)
+        
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["name"], "Enumerations")
+        self.assertEqual(result[0]["version"], 1)
+        self.assertEqual(result[0]["status"], "Active")
+        
+    def test_get_all_partial_documents(self):
+        mongo_io = MongoIO.get_instance()
+        project = {"name":1, "version": 1}
+        result = mongo_io.get_documents("enumerators", project=project)
+        
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[0]["name"], "Enumerations")
+        self.assertEqual(result[0]["version"], 0)
+        self.assertNotIn("status", result[0])
+        self.assertNotIn("enumerators", result[0])
+        
+    def test_get_some_partial_documents(self):
+        mongo_io = MongoIO.get_instance()
+        match = {"version":1}
+        project = {"name":1, "_id": 1}
+        result = mongo_io.get_documents("enumerators", match, project)
+        
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["name"], "Enumerations")
+        self.assertIn("_id", result[0])
+        self.assertNotIn("version", result[0])
+        self.assertNotIn("status", result[0])
+        self.assertNotIn("enumerators", result[0])
+        
+        
 if __name__ == '__main__':
     unittest.main()

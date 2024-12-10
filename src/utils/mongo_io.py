@@ -8,6 +8,9 @@ from src.config.config import config
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# TODO: - Refactor to loose config
+# TODO: - Refactor to use connection pooling
+
 class MongoIO:
     _instance = None
 
@@ -53,11 +56,10 @@ class MongoIO:
     def _load_versions(self):
         """Load the versions collection into memory."""
         try:
-            versions_collection = self.db.get_collection(config.get_version_collection_name())
-            versions_cursor = versions_collection.find({})
-            versions = list(versions_cursor) 
-            config.versions = versions
-            logger.info(f"{len(versions)} Versions Loaded.")
+            versions_collection_name = config.get_version_collection_name()
+            config.versions = self.get_documents(versions_collection_name)
+            
+            logger.info(f"{len(config.versions)} Versions Loaded.")
         except Exception as e:
             logger.fatal(f"Failed to get or load versions: {e} - exiting")
             sys.exit(1) # fail fast 
@@ -77,21 +79,44 @@ class MongoIO:
             the_version = int(the_version_string)
 
             # Query the database            
-            enumerators_collection = self.db.get_collection(config.get_enumerators_collection_name())
-            query = { "version": the_version }
-            enumerations = enumerators_collection.find_one(query)
+            
+            enumerators_collection_name = config.get_enumerators_collection_name()
+            match = { "version": the_version }
+            enumerations = self.get_documents(enumerators_collection_name, match)
     
             # Fail Fast if not found - critical error
             if not enumerations:
                 logger.fatal(f"Enumerators not found for version: {config.get_encounters_collection_name()}:{the_version_string}")
                 sys.exit(1) # fail fast 
     
-            config.enumerators = enumerations['enumerators']
+            # Fail Fast if too many are found - it should be 1 document
+            if len(enumerations) != 1:
+                logger.fatal(f"{len(enumerations)} ! Too many Enumerators found for version: {the_version_string}")
+                sys.exit(1) # fail fast 
+    
+            config.enumerators = enumerations[0]['enumerators']
             logger.info(f"{len(enumerations)} Enumerators Loaded.")
         except Exception as e:
             logger.fatal(f"Failed to get or load enumerators: {e} - exiting")
             sys.exit(1) # fail fast 
 
+    def get_documents(self, collection_name, match=None, project=None):
+        """Retrieve a list of documents based on a match and projection."""
+        if not self.connected: return None
+
+        # Default match and projection
+        match = match or {}
+        project = project or None
+
+        try:
+            collection = self.db.get_collection(collection_name)
+            cursor = collection.find(match, project)
+            documents = list(cursor) 
+            return documents
+        except Exception as e:
+            logger.error(f"Failed to get documents from collection '{collection_name}': {e}")
+            raise
+            
     def get_document(self, collection_name, document_id):
         """Retrieve a document by ID."""
         if not self.connected: return None
