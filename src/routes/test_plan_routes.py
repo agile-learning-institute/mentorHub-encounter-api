@@ -12,7 +12,7 @@ class TestEncounterRoutes(unittest.TestCase):
         self.app.register_blueprint(create_plan_routes(), url_prefix='/api/plan')
         self.client = self.app.test_client()
 
-    @patch('src.services.plan_services.planService.create_plan')
+    @patch('src.services.plan_services.PlanService.create_plan')
     def test_create_plan(self, mock_create_plan):
         # Mock the response from planService.create_plan
         mock_create_plan.return_value = {'id': 'mock_id', 'status': 'created'}
@@ -24,7 +24,7 @@ class TestEncounterRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'id': 'mock_id', 'status': 'created'})
 
-    @patch('src.services.plan_services.planService.create_plan')
+    @patch('src.services.plan_services.PlanService.create_plan')
     def test_breadcrumb_with_create_plan(self, mock_create_plan):
         # Mock the response from planService.create_plan
         mock_create_plan.return_value = {'id': 'mock_id', 'status': 'created'}

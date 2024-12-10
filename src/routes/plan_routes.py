@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.models.token import create_token
-from src.services.plan_services import planService
+from src.services.plan_services import PlanService
 from src.models.breadcrumb import create_breadcrumb
 
 import logging
@@ -17,7 +17,7 @@ def create_plan_routes():
             breadcrumb = create_breadcrumb()
             token = create_token()
             data = request.get_json()
-            plan = planService.create_plan(data, token, breadcrumb)
+            plan = PlanService.create_plan(data, token, breadcrumb)
             return jsonify(plan), 200
         except Exception as e:
             logger.warning(f"A processing error occurred {e}")
@@ -28,7 +28,7 @@ def create_plan_routes():
     def get_plan(id):
         try:
             token = create_token()
-            plan = planService.get_plan(id, token)
+            plan = PlanService.get_plan(id, token)
             return jsonify(plan), 200
         except Exception as e:
             logger.warning(f"Get plan, a processing error occurred {e}")
@@ -41,7 +41,7 @@ def create_plan_routes():
             token = create_token()
             breadcrumb = create_breadcrumb()
             data = request.get_json()
-            plan = planService.update_plan(id, data, token, breadcrumb)
+            plan = PlanService.update_plan(id, data, token, breadcrumb)
             return jsonify(plan), 200
         except Exception as e:
             logger.warning(f"A processing error occurred {e}")

@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class planService:
+class PlanService:
     # TODO: Review all 
 
     @staticmethod 
@@ -53,10 +53,10 @@ class planService:
         # Traverse the document and encode relevant properties
         for key, value in document.items():
             if isinstance(value, dict):
-                planService._mongo_encode(value)  
+                PlanService._mongo_encode(value)  
             elif isinstance(value, list):
                 if all(isinstance(item, dict) for item in value):
-                    document[key] = [planService._mongo_encode(item) for item in value]
+                    document[key] = [PlanService._mongo_encode(item) for item in value]
                 else:
                     document[key] = [encode_value(key, item) for item in value]
             else:
@@ -68,14 +68,14 @@ class planService:
     def create_plan(data, token, breadcrumb):
         """Get a plan if it exits, if not create a new one and return that"""
         collection_name = config.get_plans_collection_name()
-        planService._check_user_access(data, token)
+        PlanService._check_user_access(data, token)
         
         # Add breadcrumb and Active status
         data["lastSaved"] = breadcrumb
         data["status"] = "Active"
         
         # Encode Mongo ObjectID and Dates
-        planService._mongo_encode(data)
+        PlanService._mongo_encode(data)
         
         # Add the document and fetch the updated document
         new_plan_id = mongoIO.create_document(collection_name, data)
@@ -87,7 +87,7 @@ class planService:
         """Get a plan if the user has access"""
         collection_name = config.get_plans_collection_name()
         plan = mongoIO.get_document(collection_name, plan_id)
-        planService._check_user_access(plan, token)
+        PlanService._check_user_access(plan, token)
         return plan
 
     @staticmethod
@@ -95,13 +95,13 @@ class planService:
         """Update the specified plan"""
         collection_name = config.get_plans_collection_name()
         plan = mongoIO.get_document(collection_name, plan_id)
-        planService._check_user_access(plan, token)
+        PlanService._check_user_access(plan, token)
 
         # Add breadcrumb and Active status
         patch_data["lastSaved"] = breadcrumb
         
         # Encode Mongo ObjectID and Dates
-        planService._mongo_encode(patch_data)
+        PlanService._mongo_encode(patch_data)
         
         # Update the document - the updated document is returned
         plan = mongoIO.update_document(collection_name, plan_id, patch_data)
