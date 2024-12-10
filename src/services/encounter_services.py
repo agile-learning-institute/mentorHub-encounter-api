@@ -1,6 +1,5 @@
 from src.config.config import config 
 from src.utils.mongo_io import mongoIO
-from src.services.encounter_services import encounterService
 
 from datetime import datetime
 from bson import ObjectId
@@ -45,15 +44,6 @@ class encounterService:
         logger.warning(f"Access Denied: {data}, {token}")
         raise Exception("Access Denied")
       
-    @staticmethod
-    def _get_ids(collection_name, encounter_id):
-        encounter = mongoIO.get_document(collection_name, encounter_id)
-        ids = {
-            "personId": str(encounter["personId"]),
-            "mentorId": str(encounter["mentorId"])
-        }
-        return ids
-
     @staticmethod
     def _mongo_encode(document):
         """Encode ObjectId and datetime values for MongoDB"""
@@ -118,8 +108,8 @@ class encounterService:
     def update_encounter(encounter_id, patch_data, token, breadcrumb):
         """Update the specified encounter"""
         collection_name = config.get_encounters_collection_name()
-        user_ids = encounterService._get_ids(collection_name, encounter_id)
-        encounterService._check_user_access(user_ids, token)
+        encounter = mongoIO.get_document(collection_name, encounter_id)
+        encounterService._check_user_access(encounter, token)
 
         # Add breadcrumb and Active status
         patch_data["lastSaved"] = breadcrumb
