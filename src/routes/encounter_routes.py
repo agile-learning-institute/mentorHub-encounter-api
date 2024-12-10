@@ -18,7 +18,6 @@ def create_encounter_routes():
             token = create_token()
             data = request.get_json()
             encounter = encounterService.create_encounter(data, token, breadcrumb)
-            logger.info(f"Get encounter Successful {breadcrumb}")
             return jsonify(encounter), 200
         except Exception as e:
             logger.warning(f"A processing error occurred {e}")
@@ -30,7 +29,6 @@ def create_encounter_routes():
         try:
             token = create_token()
             encounter = encounterService.get_encounter(id, token)
-            logger.info(f"Get encounter Successful")
             return jsonify(encounter), 200
         except Exception as e:
             logger.warning(f"Get Encounter, a processing error occurred {e}")
@@ -44,7 +42,6 @@ def create_encounter_routes():
             breadcrumb = create_breadcrumb()
             data = request.get_json()
             encounter = encounterService.update_encounter(id, data, token, breadcrumb)
-            logger.info(f"Update encounter Successful {breadcrumb}")
             return jsonify(encounter), 200
         except Exception as e:
             logger.warning(f"A processing error occurred {e}")

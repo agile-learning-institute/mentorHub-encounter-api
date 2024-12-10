@@ -14,7 +14,6 @@ def create_config_routes():
     def get_config():
         try:
             # Return the JSON representation of the config object
-            logger.info(f"Get Config Success")
             return jsonify(config.to_dict()), 200
         except Exception as e:
             logger.warning(f"Get Config Error has occurred: {e}")
