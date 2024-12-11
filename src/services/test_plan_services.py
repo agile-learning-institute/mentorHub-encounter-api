@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from src.services.plan_services import PlanService
 
 
-class TestEncounterService(unittest.TestCase):
+class TestPlanService(unittest.TestCase):
 
     @patch('src.utils.mongo_io.MongoIO.get_document')
     @patch('src.utils.mongo_io.MongoIO.create_document')

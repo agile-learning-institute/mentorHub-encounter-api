@@ -32,9 +32,10 @@ class MongoIO:
     def _connect(self):
         """Connect to MongoDB."""
         try:
-            self.client = MongoClient(config.get_connection_string(), serverSelectionTimeoutMS=2000, socketTimeoutMS=5000)
+            self.client = MongoClient(config.CONNECTION_STRING, serverSelectionTimeoutMS=2000, socketTimeoutMS=5000)
+            # TODO: Config timeout
             self.client.admin.command('ping')  # Force connection
-            self.db = self.client.get_database(config.get_db_name())
+            self.db = self.client.get_database(config.DB_NAME)
             self.connected = True
             logger.info(f"Connected to MongoDB")
         except Exception as e:
@@ -56,7 +57,7 @@ class MongoIO:
     def _load_versions(self):
         """Load the versions collection into memory."""
         try:
-            versions_collection_name = config.get_version_collection_name()
+            versions_collection_name = config.VERSION_COLLECTION_NAME
             config.versions = self.get_documents(versions_collection_name)
             
             logger.info(f"{len(config.versions)} Versions Loaded.")
@@ -74,19 +75,19 @@ class MongoIO:
             # Get the enumerators version from the curriculum version number.
             version_strings = [version['currentVersion'].split('.').pop() or "0" 
                             for version in config.versions 
-                            if version['collectionName'] == config.get_encounters_collection_name()]
+                            if version['collectionName'] == config.ENCOUNTERS_COLLECTION_NAME]
             the_version_string = version_strings.pop() if version_strings else "0"
             the_version = int(the_version_string)
 
             # Query the database            
             
-            enumerators_collection_name = config.get_enumerators_collection_name()
+            enumerators_collection_name = config.ENUMERATORS_COLLECTION_NAME
             match = { "version": the_version }
             enumerations = self.get_documents(enumerators_collection_name, match)
     
             # Fail Fast if not found - critical error
             if not enumerations:
-                logger.fatal(f"Enumerators not found for version: {config.get_encounters_collection_name()}:{the_version_string}")
+                logger.fatal(f"Enumerators not found for version: {config.ENUMERATORS_COLLECTION_NAME}:{the_version_string}")
                 sys.exit(1) # fail fast 
     
             # Fail Fast if too many are found - it should be 1 document

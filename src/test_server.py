@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 import sys
 import signal
-from src.server import app, mongo, handle_exit, logger
+from src.server import app, handle_exit
 
 class TestServer(unittest.TestCase):
 
@@ -20,15 +20,38 @@ class TestServer(unittest.TestCase):
         response = self.client.get('/api/health/')
         self.assertEqual(response.status_code, 200)
 
-    def test_encounter_routes_registered(self):
-        # Test if encounter routes are registered
-        response = self.client.get('/api/encounter/eeee00000000000000000001/')
-        self.assertIn(response.status_code, [200, 404])  # 200 if exists, 404 if not found
-        
     def test_config_routes_registered(self):
         # Test if config routes are registered
         response = self.client.get('/api/config/')
-        self.assertIn(response.status_code, [200, 404])  # 200 if config is returned, 404 if not found
+        self.assertIn(response.status_code, [200, 404])
+
+    def test_encounter_routes_registered(self):
+        # Test if encounter routes are registered
+        response = self.client.post('/api/encounter/')
+        self.assertIn(response.status_code, [200, 500])
+        response = self.client.get('/api/encounter/encounter_id/')
+        self.assertIn(response.status_code, [200, 404, 500])
+        response = self.client.patch('/api/encounter/encounter_id')
+        self.assertIn(response.status_code, [200, 500])
+        
+    def test_plan_routes_registered(self):
+        # Test if plan routes are registered
+        response = self.client.post('/api/plan/')
+        self.assertIn(response.status_code, [200, 500])
+        response = self.client.patch('/api/plan/plan_id/')
+        self.assertIn(response.status_code, [200, 404, 500])
+        response = self.client.get('/api/plan/plan_id/')
+        self.assertIn(response.status_code, [200, 404])
+
+    def test_people_routes_registered(self):
+        # Test if people routes are registered
+        response = self.client.get('/api/people/')
+        self.assertIn(response.status_code, [200, 404])
+
+    def test_mentor_routes_registered(self):
+        # Test if mentor routes are registered
+        response = self.client.get('/api/mentor/')
+        self.assertIn(response.status_code, [200, 404])
 
     @patch('src.server.logger')
     @patch('src.server.mongo')

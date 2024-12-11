@@ -4,7 +4,7 @@ from flask import Flask
 from src.routes.people_routes import create_people_routes
 from src.routes.ejson_encoder import MongoJSONEncoder
 
-class TestMentorRoutes(unittest.TestCase):
+class TestPeopleRoutes(unittest.TestCase):
 
     def setUp(self):
         # Set up the Flask test app and register the blueprint

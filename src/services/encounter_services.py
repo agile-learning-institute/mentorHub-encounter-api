@@ -81,7 +81,7 @@ class encounterService:
     @staticmethod
     def create_encounter(data, token, breadcrumb):
         """Get a encounter if it exits, if not create a new one and return that"""
-        collection_name = config.get_encounters_collection_name()
+        collection_name = config.ENCOUNTERS_COLLECTION_NAME
         encounterService._check_user_access(data, token)
         
         # Add breadcrumb and Active status
@@ -99,7 +99,7 @@ class encounterService:
     @staticmethod
     def get_encounter(encounter_id, token):
         """Get a encounter if the user has access"""
-        collection_name = config.get_encounters_collection_name()
+        collection_name = config.ENCOUNTERS_COLLECTION_NAME
         encounter = mongoIO.get_document(collection_name, encounter_id)
         encounterService._check_user_access(encounter, token)
         return encounter
@@ -107,7 +107,7 @@ class encounterService:
     @staticmethod
     def update_encounter(encounter_id, patch_data, token, breadcrumb):
         """Update the specified encounter"""
-        collection_name = config.get_encounters_collection_name()
+        collection_name = config.ENCOUNTERS_COLLECTION_NAME
         encounter = mongoIO.get_document(collection_name, encounter_id)
         encounterService._check_user_access(encounter, token)
 

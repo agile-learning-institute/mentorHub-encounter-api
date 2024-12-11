@@ -1,21 +1,21 @@
-# Initialize Logging
-import logging
-
-from src.routes.ejson_encoder import MongoJSONEncoder
-from src.routes.mentor_routes import create_mentor_routes
-from src.routes.people_routes import create_people_routes
-from src.routes.plan_routes import create_plan_routes
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 import sys
 import signal
 from flask import Flask
+from src.routes.ejson_encoder import MongoJSONEncoder
 from prometheus_flask_exporter import PrometheusMetrics
+
 from src.config.config import config
 from src.utils.mongo_io import MongoIO
 from src.routes.encounter_routes import create_encounter_routes
 from src.routes.config_routes import create_config_routes
+from src.routes.mentor_routes import create_mentor_routes
+from src.routes.people_routes import create_people_routes
+from src.routes.plan_routes import create_plan_routes
+
+# Initialize Logging
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -24,6 +24,8 @@ app.json = MongoJSONEncoder(app)
 # Initialize Database Connection, and load one-time data
 mongo = MongoIO()
 mongo.initialize()
+
+logger.info(f"API Version {config}")
 
 # Apply Prometheus monitoring middleware
 metrics = PrometheusMetrics(app, path='/api/health/')
