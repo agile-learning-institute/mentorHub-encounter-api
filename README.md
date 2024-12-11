@@ -112,6 +112,14 @@ curl -X POST localhost:8088/api/encounter/ \
 -d '{"date":"2024-12-07 00:00:00","mentorId":"aaaa00000000000000000005","personId":"aaaa00000000000000000024","planId":"eeff00000000000000000004","status":"Active"}'
 ```
 
+### Test add a Plan Document 
+
+```bash
+curl -X POST localhost:8088/api/plan/ \
+-H "Content-Type: application/json" \
+-d '{"name":"test plan"}'
+```
+
 ### Test update a Document
 
 ```bash

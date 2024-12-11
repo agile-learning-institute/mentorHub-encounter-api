@@ -109,11 +109,11 @@ tests:
           check:
             status: /200/
             json.equals:
-            date: 2024-12-21 00:00:00
-            personId: aaaa00000000000000000004
-            mentorId: aaaa00000000000000000027
-            planId: EEFF00000000000000000003
-            lastUpdated: {}
+              date: 2024-12-21 00:00:00
+              personId: aaaa00000000000000000004
+              mentorId: aaaa00000000000000000027
+              planId: EEFF00000000000000000003
+              lastUpdated: {}
 
       - name: Update a encounter
         http:
@@ -130,13 +130,146 @@ tests:
           check:
             status: /200/
             json.equals:
-            date: 2024-12-21 00:00:00
-            personId: aaaa00000000000000000004
-            mentorId: aaaa00000000000000000027
-            planId: EEFF00000000000000000003
-            observations:
+              date: 2024-12-21 00:00:00
+              personId: aaaa00000000000000000004
+              mentorId: aaaa00000000000000000027
+              planId: EEFF00000000000000000003
+              observations:
+              - type: Text
+                prompt: What are your goals (6-month, 1-yr)
+                options: []
+                values: []
+              lastUpdated: {}
+
+  plans:
+    name: Test get plan
+    steps:
+      - name: GET an existing plan
+        http:
+          url: http://${{env.host}}/api/plan/eeff00000000000000000002
+          method: GET
+          headers:
+            Content-Type: application/json          
+          check:
+            status: /200/
+            json.equals:
+              _id: eeff00000000000000000002
+              name: Introductions
+              description: The initial discovery call
+              status: Active
+              checklist:
+              - type: Check
+                prompt: Introductions
+                options:
+                - Mike
+                - Institute
+              - type: Text
+                prompt: Tell me about you
+                options: []
+              - type: Check
+                prompt: Who is involved
+                options:
+                - Spouse
+                - Children
+                - Extended Family
+                - OTHER
+              - type: Text
+                prompt: What's happening now, why?
+                options: []
+              - type: Check
+                prompt: What matters most?
+                options:
+                - Employment
+                - OTHER
+              - type: Check
+                prompt: Agreements
+                options:
+                - Now Scope
+                - Onboarding Scheduled
+              - type: Text
+                prompt: GitHub ID
+                options: []
+              - type: Text
+                prompt: Discord ID
+                options: []
+
+      - name: Create a plan
+        http:
+          url: http://${{env.host}}/api/plan/
+          method: POST
+          headers:
+            Content-Type: application/json          
+          json: 
+            name: TestPlan
+          captures:
+            theId:
+              jsonpath: $._id                      
+          check:
+            status: /200/
+            json.equals:
+              name: StepCI Test Plan
+              lastUpdated: {}
+
+      - name: Update a plan
+        http:
+          url: http://${{env.host}}/api/plan/${{captures.theId}}
+          method: PATCH
+          headers:
+            Content-Type: application/json          
+          json:
+            checklist:
             - type: Text
               prompt: What are your goals (6-month, 1-yr)
-              options: []
-              values: []
-            lastUpdated: {}
+          check:
+            status: /200/
+            json.equals:
+              name: StepCI Test Plan
+              checklist:
+              - prompt: What are your goals (6-month, 1-yr)
+              lastUpdated: {}
+
+  people:
+    name: Test get People
+    steps:
+      - name: GET a list of people
+        http:
+          url: http://${{env.host}}/api/people/
+          method: GET
+          headers:
+            Content-Type: application/json          
+          check:
+            status: /200/
+            schema:
+              type: array
+              items:  
+                type: object 
+                properties:
+                  _id:
+                    type: string
+                  firstName:
+                    type: string
+                  lastName:
+                    type: string
+
+  mentors:
+    name: Test get Mentors
+    steps:
+      - name: GET a list of mentors
+        http:
+          url: http://${{env.host}}/api/mentor/
+          method: GET
+          headers:
+            Content-Type: application/json          
+          check:
+            status: /200/
+            schema:
+              type: array
+              items:  
+                type: object 
+                properties:
+                  _id:
+                    type: string
+                  firstName:
+                    type: string
+                  lastName:
+                    type: string
