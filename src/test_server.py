@@ -50,7 +50,7 @@ class TestServer(unittest.TestCase):
 
     def test_mentor_routes_registered(self):
         # Test if mentor routes are registered
-        response = self.client.get('/api/mentor/')
+        response = self.client.get('/api/mentors/')
         self.assertIn(response.status_code, [200, 404])
 
     @patch('src.server.logger')

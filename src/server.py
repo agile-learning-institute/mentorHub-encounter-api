@@ -43,7 +43,7 @@ app.register_blueprint(encounter_handler, url_prefix='/api/encounter')
 app.register_blueprint(config_handler, url_prefix='/api/config')
 app.register_blueprint(plan_handler, url_prefix='/api/plan')
 app.register_blueprint(people_handler, url_prefix='/api/people')
-app.register_blueprint(mentor_handler, url_prefix='/api/mentor')
+app.register_blueprint(mentor_handler, url_prefix='/api/mentors')
 
 # Define a signal handler for SIGTERM and SIGINT
 def handle_exit(signum, frame):

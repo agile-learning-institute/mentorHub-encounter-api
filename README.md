@@ -57,14 +57,14 @@ pipenv run container
 This will build the new container, and {re}start the mongodb and API container.
 
 ## Run StepCI end-2-end testing
-NOTE: Assumes the API is running at localhost:8090
+NOTE: Assumes the API is running at localhost:8088
 
 ```bash
 pipenv run stepci
 ```
 
 ## Run StepCI load testing
-NOTE: Assumes the API is running at localhost:8090
+NOTE: Assumes the API is running at localhost:8088
 
 ```bash
 pipenv run load
@@ -89,22 +89,22 @@ If you want to do more manual testing, here are the curl commands to use
 This endpoint sup8090s the Prometheus monitoring standards for a health check endpoint
 
 ```bash
-curl http://localhost:8090/api/health/
+curl http://localhost:8088/api/health/
 ```
 
 ### Test Config Endpoint
 
 ```bash
-curl http://localhost:8090/api/config/
+curl http://localhost:8088/api/config/
 ```
 
-### Test get a document
+### Test get a Encounter document
 
 ```bash
-curl http://localhost:8090/api/encounter/eeee00000000000000000001/
+curl http://localhost:8088/api/encounter/eeee00000000000000000001/
 ```
 
-### Test add a Document 
+### Test add a Encounter Document 
 
 ```bash
 curl -X POST localhost:8088/api/encounter/ \
@@ -112,20 +112,46 @@ curl -X POST localhost:8088/api/encounter/ \
 -d '{"date":"2024-12-07 00:00:00","mentorId":"aaaa00000000000000000005","personId":"aaaa00000000000000000024","planId":"eeff00000000000000000004","status":"Active"}'
 ```
 
-### Test add a Plan Document 
-
-```bash
-curl -X POST localhost:8088/api/plan/ \
--H "Content-Type: application/json" \
--d '{"name":"test plan"}'
-```
-
-### Test update a Document
+### Test update a Encounter Document
 
 ```bash
 curl -X PATCH localhost:8088/api/encounter/eeee00000000000000000001 \
 -H "Content-Type: application/json" \
 -d '{"status":"Archived"}'
+```
+
+### Test get a Plan document
+
+```bash
+curl http://localhost:8088/api/plan/eeff00000000000000000002/
+```
+
+### Test add a Plan Document 
+
+```bash
+curl -X POST localhost:8088/api/plan/ \
+-H "Content-Type: application/json" \
+-d '{"name":"test"}'
+```
+
+### Test update a Plan Document
+
+```bash
+curl -X PATCH localhost:8088/api/plan/eeff00000000000000000002 \
+-H "Content-Type: application/json" \
+-d '{"status":"Archived"}'
+```
+
+### Test get a list of People
+
+```bash
+curl http://localhost:8088/api/people/
+```
+
+### Test get a list of Mentors
+
+```bash
+curl http://localhost:8088/api/mentors/
 ```
 
 ## Observability and Configuration

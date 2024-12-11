@@ -75,6 +75,95 @@ paths:
         '500':
           description: A Processing Error occurred
 
+  /api/plan:
+    post:
+      summary: Create a plan document
+      description: Create a new plan document
+      operationId: post_plan
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plan'
+        '500':
+          description: A Processing Error occurred
+  /api/plan/{id}:
+    get:
+      summary: Get a plan document
+      description: Get the specified plan document
+      operationId: get_plan
+      parameters:
+        - name: id
+          in: path
+          description: ID of plan document to retrieve
+          required: true
+          schema:
+            type: string
+            format: GUID
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plan'
+        '500':
+          description: A Processing Error occurred
+    patch:
+      summary: Update a plan document
+      description: Update the plan document
+      operationId: update_plan
+      parameters:
+        - name: id
+          in: path
+          description: ID of plan to update
+          required: true
+          schema:
+            type: string
+            format: GUID
+      requestBody:
+        description: plan
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/plan'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plan'
+        '500':
+          description: A Processing Error occurred
+
+  /api/people/:
+    get:
+      summary: Get a list of People
+      operationId: get_people
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Names'
+
+  /api/mentors/:
+    get:
+      summary: Get a list of Mentors
+      operationId: get_mentors
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Names'
+
   /api/config/:
     get:
       summary: Get API Configuration Information
@@ -180,6 +269,89 @@ components:
           additionalProperties: false
           type: object
       additionalProperties: false
+
+    plan: 
+      type: object
+      description: A plan for an encounter between a member and a mentor
+      required:
+        - _id
+        - name
+      properties:
+        _id:
+          description: The unique identifier for an encounter plan
+          type: string
+        name:
+          description: The short name of the plan
+          pattern: ^[^\s]{0,32}$
+          type: string
+        description:
+          description: Description of the Plan
+          pattern: ^[ -~]{0,256}$
+          type: string
+        status:
+          description: The status of this plan
+          enum:
+            - Active
+            - Archived
+          type: string
+        checklist:
+          description: a checklist of planned observations
+          items:
+            description: >-
+              An prompt to uncover information, and possible options to
+              accelerate note taking
+            properties:
+              type:
+                description: The type of observation control, from an enumerated list
+                enum:
+                  - Radio
+                  - Check
+                  - Text
+                type: string
+              prompt:
+                description: The question asked
+                pattern: ^[ -~]{0,256}$
+                type: string
+              options:
+                description: >-
+                  The options for an answer (on radio and check type
+                  observations)
+                items:
+                  pattern: ^[ -~]{0,256}$
+                  type: string
+                type: array
+            type: object
+          type: array
+        lastSaved:
+          description: change tracking breadcrumb
+          properties:
+            fromIp:
+              description: Http Request remote IP address
+              type: string
+            byUser:
+              description: UUID Of User
+              type: string
+            atTime:
+              description: The date-time when last updated
+              type: string
+            correlationId:
+              description: The logging correlation ID of the update transaction
+              type: string
+          additionalProperties: false
+          type: object
+      additionalProperties: false
+          
+    Names:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+          firstName:
+            type: string
+          lastName:
+            type: string
 
     Config:
       type: object
