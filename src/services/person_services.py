@@ -11,29 +11,27 @@ logger = logging.getLogger(__name__)
 class PersonService:
 
     @staticmethod 
-    def _rbac_filter(match, data, token):
+    def _check_rbac_access(token):
         """Role Based Access Control logic"""
         
-        # PUT THIS SOMEWHERE
-        
         # Staff can view all people
-        if "Staff" in token["roles"]: return match
+        if "Staff" in token["roles"]: 
+            return {}
         
         # Mentors can access their apprentices encounters
         if "Mentor" in token["roles"]:
-            match["mentorId"] = data["mentorId"]
-            return match
+            return {"mentorId":token["userId"]}
 
         # Only staff and mentors have access in this API
-        logger.warning(f"access denied {token["userId"]} {token["roles"]}")
-        raise "Access Denied!"
+        logger.warning(f"access denied {token['userId']} {token["roles"]}")
+        raise PermissionError("Access Denied!")
                   
     @staticmethod
-    def get_people(match, token):
+    def get_people(token):
         """Get a list of people"""
-        people_collection_name = "" # TODO: config.get_people_collection_name()
-        match = {} # TODO: populate from query parameters like query=firstName
-        match = PersonService._rbac_filter(match, token) 
+        people_collection_name = config.PEOPLE_COLLECTION_NAME
+        match = PersonService._check_rbac_access(token)
+        # TODO: Add Search Query to match
         project = {"firstName": 1,"lastName": 1,"_id": 1}
                 
         # Get the documents
@@ -41,13 +39,13 @@ class PersonService:
         return people
 
     @staticmethod
-    def get_mentors(encounter_id, token):
+    def get_mentors(token):
         """Get a list of mentors"""
-        people_collection_name = "" # TODO: config.get_people_collection_name()
-        match = {"roles": {"$contains":"mentor"} }
+        people_collection_name = config.PEOPLE_COLLECTION_NAME
+        PersonService._check_rbac_access(token)
+        match = {"roles": {"$in": ["mentor"]}}
         project = {"firstName": 1,"lastName": 1,"_id": 1}
                 
         # Get the documents
         people = mongoIO.get_documents(people_collection_name, match, project)
         return people
-
