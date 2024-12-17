@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+*.DS_Store
+>>>>>>> Stashed changes
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
