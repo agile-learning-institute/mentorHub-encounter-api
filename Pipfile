@@ -4,26 +4,20 @@ verify_ssl = true
 name = "pypi"
 
 [scripts]
-# Install dependencies
-install = "pipenv sync"
-# Run the app locally
-local1 = "mh up mongodb"
-local2 = "python src/app/main.py"
-local = "bash -c 'pipenv run local1 && pipenv run local2'"
-# Build and run the Docker container
-container1 = "docker build --file Dockerfile --tag ghcr.io/agile-learning-institute/mentorhub-encounter-api:latest ."
-container2 = "mh up encounter-api"
-container = "bash -c 'pipenv run container1 && pipenv run container2'"
+start = "sh -c 'mh down && mh up mongodb && pipenv run local'"
+local = "sh -c 'PYTHONPATH=$(pwd)/src python3 -m server'"
+test = "echo 'Not Yet Implemented'"
+stepci = "stepci run ./test/stepci.yaml"
+load = "stepci run ./test/stepci.yaml --loadtest"
+build = "docker build --tag ghcr.io/agile-learning-institute/mentorhub-encounter-api:latest ."
+container = "sh -c 'mh down && pipenv run build && mh up encounter-api'"
 
 [packages]
 flask = "*"
-flask-pymongo = "*"
-flask-wtf = "*"
-pymongo = {extras = ["srv"], version = "*"}
-pyinstaller = "*"
-gunicorn = "*"
+pymongo = "*"
+prometheus-flask-exporter = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.12"
