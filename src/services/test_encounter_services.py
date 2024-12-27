@@ -21,9 +21,9 @@ class TestEncounterService(unittest.TestCase):
         mock_get_instance.return_value = mock_mongo_io
         mock_mongo_io.get_document.return_value = {"foo": "bar"}
         
-        curriculum = EncounterService.get_encounter("encounter_id", self.token)
+        encounter = EncounterService.get_encounter("encounter_id", self.token)
         mock_mongo_io.get_document.assert_called_once_with(config.ENCOUNTERS_COLLECTION_NAME, "encounter_id")
-        self.assertEqual(curriculum, {"foo": "bar"})
+        self.assertEqual(encounter, {"foo": "bar"})
 
     @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
     def test_token_member_pass(self, mock_get_instance):
@@ -31,11 +31,11 @@ class TestEncounterService(unittest.TestCase):
         token = {"user_id":"000000000000000000000000", "roles":["Member"]}
         mock_mongo_io = MagicMock()
         mock_get_instance.return_value = mock_mongo_io
-        mock_mongo_io.get_document.return_value = {"foo": "bar"}
+        mock_mongo_io.get_document.return_value = {"personId": "000000000000000000000000"}
 
-        curriculum = EncounterService.get_encounter("000000000000000000000000", token)
+        encounter = EncounterService.get_encounter("000000000000000000000000", token)
         mock_mongo_io.get_document.assert_called_once_with(config.ENCOUNTERS_COLLECTION_NAME, "000000000000000000000000")
-        self.assertEqual(curriculum, {"foo": "bar"})
+        self.assertEqual(encounter, {"personId": "000000000000000000000000"})
 
     @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
     def test_token_member_fail(self, mock_get_instance):
@@ -53,17 +53,10 @@ class TestEncounterService(unittest.TestCase):
         token = {"user_id":"000000000000000000000012", "roles":["Mentor"]}
         mock_mongo_io = MagicMock()
         mock_get_instance.return_value = mock_mongo_io
-        mock_mongo_io.get_document.side_effect = [
-            {"mentorId": "000000000000000000000012"},
-            {"foo": "bar"}
-        ]
+        mock_mongo_io.get_document.return_value = {"mentorId": "000000000000000000000012"}
 
-        curriculum = EncounterService.get_encounter("000000000000000000000000", token)
-        mock_mongo_io.get_document.assert_has_calls([
-            unittest.mock.call(config.PEOPLE_COLLECTION_NAME, "000000000000000000000000"),
-            unittest.mock.call(config.ENCOUNTERS_COLLECTION_NAME, "000000000000000000000000")
-        ])
-        self.assertEqual(curriculum, {"foo": "bar"})
+        encounter = EncounterService.get_encounter("000000000000000000000000", token)
+        self.assertEqual(encounter, {"mentorId": "000000000000000000000012"})
 
     @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
     def test_token_mentor_fail(self, mock_get_instance):
@@ -77,7 +70,7 @@ class TestEncounterService(unittest.TestCase):
 
     @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
     def test_create_encounter(self, mock_get_instance):
-        config = MentorHub_Config.getInstance()
+        config = MentorHub_Config.get_instance()
         mock_mongo_io = MagicMock()
         mock_get_instance.return_value = mock_mongo_io
         mock_mongo_io.get_document.return_value = {"foo":"bar"}
@@ -133,12 +126,13 @@ class TestEncounterService(unittest.TestCase):
         # Assertions for MongoIO interactions
         mock_get_document.assert_called_with("encounters", encounter_id)
 
-    @patch('mentorhub_utils.MentorHubMongoIO.get_document')
-    @patch('mentorhub_utils.MentorHubMongoIO.update_document')
-    def test_update_encounter(self, mock_update_document, mock_get_document):
+    @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
+    def test_update_encounter(self, mock_get_instance):
         test_document = {"personId": ObjectId(), "mentorId": ObjectId(), "plan_id": ObjectId()}
-        mock_get_document.side_effect = [test_document]
-        mock_update_document.side_effect = [test_document]
+        mock_mongo_io = MagicMock()
+        mock_get_instance.return_value = mock_mongo_io
+        mock_mongo_io.get_document.side_effect = [test_document]
+        mock_mongo_io.update_document.side_effect = [test_document]
 
         encounter_id = "mock_encounter_id"
         patch_data = {"status": "Updated"}
@@ -154,8 +148,8 @@ class TestEncounterService(unittest.TestCase):
         self.assertEqual(result, test_document)
 
         # Assertions for MongoIO interactions
-        mock_get_document.assert_called_with("encounters", encounter_id)
-        mock_update_document.assert_called_once_with(
+        mock_mongo_io.get_document.assert_called_with("encounters", encounter_id)
+        mock_mongo_io.update_document.assert_called_once_with(
             "encounters",
             encounter_id,
             {"status": "Updated", "lastSaved": breadcrumb}

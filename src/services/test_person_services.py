@@ -8,14 +8,14 @@ class TestPersonService(unittest.TestCase):
     def test_get_people_staff_access(self, mock_get_instance):
         mock_mongo_io = MagicMock()
         mock_get_instance.return_value = mock_mongo_io
-        mock_mongo_io.get_document.return_value = [{"_id": "123", "firstName": "John", "lastName": "Doe"}]
+        mock_mongo_io.get_documents.return_value = [{"_id": "123", "firstName": "John", "lastName": "Doe"}]
 
         token = {"roles": ["Staff"], "userId": "staff1"}
         result = PersonService.get_people(token)
         
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["firstName"], "John")
-        mock_mongo_io.get_document.assert_called_once_with("people", {}, {"firstName": 1, "lastName": 1, "_id": 1})
+        mock_mongo_io.get_documents.assert_called_once_with("people", {}, {"firstName": 1, "lastName": 1, "_id": 1})
 
     @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
     def test_get_people_mentor_access(self, mock_get_instance):

@@ -112,9 +112,9 @@ class EncounterService:
     @staticmethod
     def update_encounter(encounter_id, patch_data, token, breadcrumb):
         """Update the specified encounter"""
-        collection_name = config.ENCOUNTERS_COLLECTION_NAME
         config = MentorHub_Config.get_instance()
         mongoIO = MentorHubMongoIO.get_instance()
+        collection_name = config.ENCOUNTERS_COLLECTION_NAME
 
         encounter = mongoIO.get_document(collection_name, encounter_id)
         EncounterService._check_user_access(encounter, token)
