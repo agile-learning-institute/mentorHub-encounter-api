@@ -16,6 +16,7 @@ container = "sh -c 'mh down && pipenv run build && mh up encounter-api'"
 flask = "*"
 pymongo = "*"
 prometheus-flask-exporter = "*"
+mentorhub-utils = "*"
 
 [dev-packages]
 

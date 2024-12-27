@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify
-from src.config.config import config
-from src.models.token import create_token
+from mentorhub_utils import create_breadcrumb, create_token
 from src.services.person_services import PersonService
  
 import logging
@@ -16,6 +15,7 @@ def create_mentor_routes():
     def get_mentors():
         try:
             token = create_token()
+            breadcrumb = create_breadcrumb(token)
             result = PersonService.get_mentors(token) 
             return jsonify(result), 200
         except Exception as e:

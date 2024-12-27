@@ -1,6 +1,5 @@
-from flask import Blueprint, jsonify
-from src.config.config import config
-from src.models.token import create_token
+from flask import Blueprint, request, jsonify
+from mentorhub_utils import create_breadcrumb, create_token
 from src.services.person_services import PersonService
  
 import logging
@@ -16,7 +15,8 @@ def create_people_routes():
     def get_people():
         try:
             token = create_token()
-            result = PersonService.get_people(token) # TODO: Pass Query Parameter
+            breadcrumb = create_breadcrumb(token)
+            result = PersonService.get_people(token, request.query_string) 
             return jsonify(result), 200
         except Exception as e:
             logger.warning(f"Get People Error has occurred: {e}")
