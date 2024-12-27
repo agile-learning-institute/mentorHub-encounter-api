@@ -58,4 +58,4 @@ signal.signal(signal.SIGINT, handle_exit)
 
 # Expose the app object for Gunicorn
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=config.PORT)
+    app.run(host='0.0.0.0', port=config.ENCOUNTER_API_PORT)

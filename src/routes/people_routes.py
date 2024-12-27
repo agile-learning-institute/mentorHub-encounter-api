@@ -16,7 +16,7 @@ def create_people_routes():
         try:
             token = create_token()
             breadcrumb = create_breadcrumb(token)
-            result = PersonService.get_people(token, request.query_string) 
+            result = PersonService.get_people(token) 
             return jsonify(result), 200
         except Exception as e:
             logger.warning(f"Get People Error has occurred: {e}")
