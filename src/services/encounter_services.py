@@ -1,4 +1,4 @@
-from mentorhub_utils import MentorHubMongoIO, MentorHub_Config
+from mentorhub_utils import MentorHubMongoIO, MentorHub_Config, encode_document
 
 from datetime import datetime
 from bson import ObjectId
@@ -6,21 +6,6 @@ from flask import jsonify
 import logging
 
 logger = logging.getLogger(__name__)
-#############
-## TODO: Open an Issue
-## - Require future date, personId and mentorId on create
-## - Disallow personId and mentorId updates unless Staff
-## - Disallow date update values before now() unless Staff
-###########
-## TODO: New Schema Required - Issue on mongodb and encounter-api
-## - New properties for start date-time and end date-time
-## - New Statuses of Scheduled, Active, Completed, Cancelled, Archived
-## - Disallow status updates other that Scheduled -> Cancelled or * -> Archived
-## - Disallow date changes unless status == Scheduled
-## - Disallow observation updates unless status == Active
-## - Start endpoint - If Status = Scheduled, sets status to Active and records start time
-## - End endpoint - If Status = Active, sets status to Completed and record end time
-## - Disallow start/end updates
 
 class EncounterService:
 
@@ -42,41 +27,7 @@ class EncounterService:
         # User has No Access! Log a warning and raise an exception
         logger.warning(f"Access Denied: {data}, {token}")
         raise Exception("Access Denied")
-      
-    @staticmethod
-    def _mongo_encode(document):
-        """Encode ObjectId and datetime values for MongoDB"""
-        id_properties = ["personId", "mentorId", "planId", "byUser"]
-        date_properties = ["date", "atTime"]
-        
-        def encode_value(key, value):
-            """Encode identified values"""
-            if key in id_properties:
-                if isinstance(value, str):
-                    return ObjectId(value)
-                if isinstance(value, list):
-                    return [ObjectId(item) if isinstance(item, str) else item for item in value]
-            if key in date_properties:
-                if isinstance(value, str):
-                    return datetime.fromisoformat(value)
-                if isinstance(value, list):
-                    return [datetime.fromisoformat(item) if isinstance(item, str) else item for item in value]
-            return value
-
-        # Traverse the document and encode relevant properties
-        for key, value in document.items():
-            if isinstance(value, dict):
-                EncounterService._mongo_encode(value)  
-            elif isinstance(value, list):
-                if all(isinstance(item, dict) for item in value):
-                    document[key] = [EncounterService._mongo_encode(item) for item in value]
-                else:
-                    document[key] = [encode_value(key, item) for item in value]
-            else:
-                document[key] = encode_value(key, value)  
-
-        return document
-    
+          
     @staticmethod
     def create_encounter(data, token, breadcrumb):
         """Get a encounter if it exits, if not create a new one and return that"""
@@ -91,7 +42,9 @@ class EncounterService:
         data["status"] = "Active"
         
         # Encode Mongo ObjectID and Dates
-        EncounterService._mongo_encode(data)
+        id_properties = ["personId", "mentorId", "planId"]
+        date_properties = ["date"]
+        encode_document(data, id_properties, date_properties)
         
         # Add the document and fetch the updated document
         new_encounter_id = mongoIO.create_document(collection_name, data)
@@ -123,7 +76,9 @@ class EncounterService:
         patch_data["lastSaved"] = breadcrumb
         
         # Encode Mongo ObjectID and Dates
-        EncounterService._mongo_encode(patch_data)
+        id_properties = ["personId", "mentorId", "planId"]
+        date_properties = ["date"]
+        encode_document(patch_data, id_properties, date_properties)
         
         # Update the document - the updated document is returned
         encounter = mongoIO.update_document(collection_name, encounter_id, patch_data)

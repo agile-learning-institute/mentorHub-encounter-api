@@ -134,12 +134,12 @@
         },
         "mentorhub-utils": {
             "hashes": [
-                "sha256:275f3b19618aac5e2f49da90d8dd8bd849ec279986b667575a7c129eb0dc5f9e",
-                "sha256:527c1d6131f0f70cbfb84dd97eb9bd6f4af3bc430abe634d03b4ce2807b35aff"
+                "sha256:1ef08f069eb88ef94f2350049de9cf569d8f9fece806792f481cc6d0ccf32752",
+                "sha256:458729948416483225e77a833e4b60a2fd7cdb370a6ca32830b98410b63ac01e"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==1.0.2"
+            "version": "==1.0.3"
         },
         "prometheus-client": {
             "hashes": [

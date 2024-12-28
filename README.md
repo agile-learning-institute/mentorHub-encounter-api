@@ -10,11 +10,7 @@ Now you can remove these instructions from the readme,
 
 ## Overview
 
-<<<<<<< Updated upstream
-This is a template repo for a simple Flask API that provides Get/Post/Patch services for documents in the encounter encounter. This API uses data from a [backing Mongo Database](https://github.com/agile-learning-institute/mentorHub-mongodb), and sup8090s a [Single Page Application.](https://github.com/agile-learning-institute/mentorHub-encounter-ui)
-=======
 This is a simple Flask API that provides Get/Post/Patch services for documents in the Encounter collection. This API uses data from a [backing Mongo Database](https://github.com/agile-learning-institute/mentorHub-mongodb), and supports a [Single Page Application.](https://github.com/agile-learning-institute/mentorHub-encounter-ui)
->>>>>>> Stashed changes
 
 The OpenAPI specifications for the api can be found in the ``docs`` folder, and are served [here](https://agile-learning-institute.github.io/mentorHub-encounter-api/)
 
@@ -67,16 +63,11 @@ NOTE: Assumes the API is running at localhost:8088
 pipenv run stepci
 ```
 
-<<<<<<< Updated upstream
-## Run StepCI load testing
-NOTE: Assumes the API is running at localhost:8088
-=======
-Generates loads of test data, ctrl-c to exit -->
->>>>>>> Stashed changes
-
+Run Load Tests
 ```bash
 pipenv run load
 ```
+Generates loads of test data
 
 # Project Layout
 - ``/src`` this folder contains all source code
@@ -94,11 +85,7 @@ If you want to do more manual testing, here are the curl commands to use
 
 ### Test Health Endpoint
 
-<<<<<<< Updated upstream
-This endpoint sup8090s the Prometheus monitoring standards for a health check endpoint
-=======
 This endpoint supports the prometheus monitoring standards for a healthcheck endpoint
->>>>>>> Stashed changes
 
 ```bash
 curl http://localhost:8088/api/health/
@@ -168,14 +155,8 @@ curl http://localhost:8088/api/mentors/
 
 ## Observability and Configuration
 
-<<<<<<< Updated upstream
-The ```api/config/``` endpoint will return a list of configuration values. These values are either "defaults" or loaded from a singleton configuration file, or an Environment Variable of the same name. Configuration files take precedence over environment variables. The environment variable "CONFIG_FOLDER" will change the location of configuration files from the default of ```./```
-
-The ```api/health/``` endpoint is a [Prometheus](https://prometheus.io) Health check endpoint.
-=======
 The ```api/config/``` endpoint will return a list of configuration values. These values are either "defaults" or loaded from an Environment Variable, or found in a singleton configuration file of the same name. Configuration files take precedence over environment variables. The variable "CONFIG_FOLDER" will change the location of configuration files from the default of ```./```
 
 The ```api/health/``` endpoint is a Prometheus Healthcheck endpoint.
->>>>>>> Stashed changes
 
 The [Dockerfile](./Dockerfile) uses a 2-stage build, and sup8090s both amd64 and arm64 architectures. 

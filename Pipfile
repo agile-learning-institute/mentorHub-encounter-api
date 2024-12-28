@@ -6,7 +6,7 @@ name = "pypi"
 [scripts]
 start = "sh -c 'mh down && mh up mongodb && pipenv run local'"
 local = "sh -c 'PYTHONPATH=$(pwd)/src python3 -m server'"
-test = "echo 'Not Yet Implemented'"
+test = "python -m unittest discover -s ./src -p 'test_*.py'"
 stepci = "stepci run ./test/stepci.yaml"
 load = "stepci run ./test/stepci.yaml --loadtest"
 build = "docker build --tag ghcr.io/agile-learning-institute/mentorhub-encounter-api:latest ."
