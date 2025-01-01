@@ -7,11 +7,12 @@ from src.services.plan_services import PlanService
 
 class TestPlanService(unittest.TestCase):
 
-    @patch('src.utils.mongo_io.MongoIO.get_document')
-    @patch('src.utils.mongo_io.MongoIO.create_document')
-    def test_create_plan(self, mock_create_document, mock_get_document):
-        mock_create_document.return_value = "mock_plan_id"
-        mock_get_document.return_value = {"id": ObjectId("000000000000000000000001"), "status": "Active"}
+    @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
+    def test_create_plan(self, mock_get_instance):
+        mock_mongo_io = MagicMock()
+        mock_get_instance.return_value = mock_mongo_io
+        mock_mongo_io.get_document.return_value = {"id": ObjectId("000000000000000000000001"), "status": "Active"}
+        mock_mongo_io.create_document.return_value = "mock_plan_id"
 
         data = {"name": "Foo"}
         token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
@@ -21,7 +22,7 @@ class TestPlanService(unittest.TestCase):
         self.assertEqual(result, {"id": ObjectId("000000000000000000000001"), "status": "Active"})
 
         # Assertions for MongoIO interactions
-        mock_create_document.assert_called_once_with(
+        mock_mongo_io.create_document.assert_called_once_with(
             "plans",
             {
                 "name": "Foo",
@@ -29,11 +30,13 @@ class TestPlanService(unittest.TestCase):
                 "status": "Active"
             }
         )
-        mock_get_document.assert_called_once_with("plans", "mock_plan_id")
+        mock_mongo_io.get_document.assert_called_once_with("plans", "mock_plan_id")
 
-    @patch('src.utils.mongo_io.MongoIO.get_document')
-    def test_get_plan(self, mock_get_document):
-        mock_get_document.side_effect = [{"name": "foo"}]
+    @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
+    def test_get_plan(self, mock_get_instance):
+        mock_mongo_io = MagicMock()
+        mock_get_instance.return_value = mock_mongo_io
+        mock_mongo_io.get_document.side_effect = [{"name": "foo"}]
 
         plan_id = "mock_plan_id"
         token = {"user_id": str(ObjectId()), "roles": ["Staff"]}
@@ -42,12 +45,15 @@ class TestPlanService(unittest.TestCase):
         self.assertEqual(result, {"name": "foo"})
 
         # Assertions for MongoIO interactions
-        mock_get_document.assert_called_with("plans", plan_id)
+        mock_mongo_io.get_document.assert_called_with("plans", plan_id)
 
-    @patch('src.utils.mongo_io.MongoIO.update_document')
-    def test_update_plan(self, mock_update_document):
+    @patch('mentorhub_utils.MentorHubMongoIO.get_instance')
+    def test_update_plan(self, mock_get_instance):
         test_document = {"name":"foo"}
-        mock_update_document.side_effect = [test_document]
+        
+        mock_mongo_io = MagicMock()
+        mock_get_instance.return_value = mock_mongo_io
+        mock_mongo_io.update_document.side_effect = [test_document]
 
         plan_id = "mock_plan_id"
         patch_data = {"status": "Updated"}
@@ -58,7 +64,7 @@ class TestPlanService(unittest.TestCase):
         self.assertEqual(result, test_document)
 
         # Assertions for MongoIO interactions
-        mock_update_document.assert_called_once_with(
+        mock_mongo_io.update_document.assert_called_once_with(
             "plans",
             "mock_plan_id",
             {"status": "Updated", "lastSaved": breadcrumb}

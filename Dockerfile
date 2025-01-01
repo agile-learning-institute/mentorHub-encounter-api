@@ -30,10 +30,10 @@ RUN pip install pipenv && pipenv install --deploy --system
 RUN pip install gunicorn gevent
 
 # Expose the port the app will run on
-EXPOSE 8088
+EXPOSE 8090
 
 # Set Environment Variables
 ENV PYTHONPATH=/opt/mentorhub-encounter-api
 
 # Command to run the application using Gunicorn with exec to forward signals
-CMD exec gunicorn --bind 0.0.0.0:8088 src.server:app
+CMD exec gunicorn --bind 0.0.0.0:8090 src.server:app

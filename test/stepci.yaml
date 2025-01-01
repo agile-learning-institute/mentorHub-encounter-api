@@ -1,7 +1,7 @@
 version: "1.1"
 name: encounter API Check
 env:
-  host: localhost:8088
+  host: localhost:8090
 config:
   loadTest:
     phases:
@@ -21,17 +21,17 @@ tests:
             schema:
               type: object
               properties:
-                api_version:
-                  type: string
                 config_items:
                   type: array
+                token:
+                  type: object
                 versions:
                   type: array
                 enumerators:
                   type: object
               required:
-                - api_version
                 - config_items
+                - token
                 - versions
                 - enumerators
               additionalProperties: false
@@ -256,7 +256,7 @@ tests:
     steps:
       - name: GET a list of mentors
         http:
-          url: http://${{env.host}}/api/mentor/
+          url: http://${{env.host}}/api/mentors/
           method: GET
           headers:
             Content-Type: application/json          

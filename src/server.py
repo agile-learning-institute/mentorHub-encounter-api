@@ -1,13 +1,10 @@
 import sys
 import signal
 from flask import Flask
-from src.routes.ejson_encoder import MongoJSONEncoder
 from prometheus_flask_exporter import PrometheusMetrics
-
-from src.config.config import config
-from src.utils.mongo_io import MongoIO
+from mentorhub_utils import MentorHub_Config, MongoJSONEncoder, MentorHubMongoIO
+from mentorhub_utils import create_config_routes
 from src.routes.encounter_routes import create_encounter_routes
-from src.routes.config_routes import create_config_routes
 from src.routes.mentor_routes import create_mentor_routes
 from src.routes.people_routes import create_people_routes
 from src.routes.plan_routes import create_plan_routes
@@ -17,19 +14,22 @@ import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+# Initialize Configurations
+config = MentorHub_Config.get_instance()
+
 # Initialize Flask App
 app = Flask(__name__)
 app.json = MongoJSONEncoder(app)
 
 # Initialize Database Connection, and load one-time data
-mongo = MongoIO()
-mongo.initialize()
+mongo = MentorHubMongoIO.get_instance()
+mongo.configure(config.ENCOUNTERS_COLLECTION_NAME)
 
-logger.info(f"API Version {config}")
+logger.info(f"API Version {config.BUILT_AT}")
 
 # Apply Prometheus monitoring middleware
 metrics = PrometheusMetrics(app, path='/api/health/')
-metrics.info('app_info', 'Application info', version=config.api_version)
+metrics.info('app_info', 'Application info', version=config.BUILT_AT)
 
 # Initialize Route Handlers
 config_handler = create_config_routes()
@@ -58,4 +58,4 @@ signal.signal(signal.SIGINT, handle_exit)
 
 # Expose the app object for Gunicorn
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=config.PORT)
+    app.run(host='0.0.0.0', port=config.ENCOUNTER_API_PORT)

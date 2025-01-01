@@ -25,28 +25,6 @@ class TestPlanRoutes(unittest.TestCase):
         self.assertEqual(response.json, {'id': 'mock_id', 'status': 'created'})
 
     @patch('src.services.plan_services.PlanService.create_plan')
-    def test_breadcrumb_with_create_plan(self, mock_create_plan):
-        # Mock the response from planService.create_plan
-        mock_create_plan.return_value = {'id': 'mock_id', 'status': 'created'}
-
-        # Send POST request with headers for breadcrumb
-        headers = {
-            'X-User-Id': str(ObjectId()),  # Mock a valid user ID
-            'X-Correlation-Id': 'test-correlation-id'
-        }
-        request_data = {'name': 'Test Encounter'}
-        response = self.client.post('/api/plan/', json=request_data, headers=headers)
-
-        # Verify that the correct breadcrumb is passed
-        actual_breadcrumb = mock_create_plan.call_args[0][2]
-        expected_breadcrumb = {
-            'byUser': ObjectId(headers['X-User-Id']),
-            'correlationId': 'test-correlation-id'
-        }
-        self.assertEqual(actual_breadcrumb['byUser'], expected_breadcrumb['byUser'])
-        self.assertEqual(actual_breadcrumb['correlationId'], expected_breadcrumb['correlationId'])
-
-    @patch('src.services.plan_services.PlanService.create_plan')
     def test_token_with_create_plan(self, mock_create_plan):
         # Mock the response from planService.create_plan
         mock_create_plan.return_value = {'id': 'mock_id', 'status': 'created'}

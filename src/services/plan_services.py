@@ -1,5 +1,4 @@
-from src.config.config import config 
-from src.utils.mongo_io import mongoIO
+from mentorhub_utils import MentorHub_Config, MentorHubMongoIO
 
 from datetime import datetime
 from bson import ObjectId
@@ -30,6 +29,9 @@ class PlanService:
         """Get a plan if it exits, if not create a new one and return that"""
         PlanService._check_user_access(token)
         
+        config = MentorHub_Config.get_instance()
+        mongoIO = MentorHubMongoIO.get_instance()
+        
         # Add breadcrumb and Active status
         data["lastSaved"] = breadcrumb
         data["status"] = "Active"
@@ -44,6 +46,10 @@ class PlanService:
     def get_plan(plan_id, token):
         """Get a plan if the user has access"""
         PlanService._check_user_access(token)
+        
+        config = MentorHub_Config.get_instance()
+        mongoIO = MentorHubMongoIO.get_instance()
+
         collection_name = config.PLANS_COLLECTION_NAME
         plan = mongoIO.get_document(collection_name, plan_id)
         return plan
@@ -52,6 +58,9 @@ class PlanService:
     def update_plan(plan_id, patch_data, token, breadcrumb):
         """Update the specified plan"""
         PlanService._check_user_access(token)
+
+        config = MentorHub_Config.get_instance()
+        mongoIO = MentorHubMongoIO.get_instance()
 
         # Add breadcrumb 
         patch_data["lastSaved"] = breadcrumb

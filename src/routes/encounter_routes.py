@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
-from src.models.token import create_token
-from src.services.encounter_services import encounterService
-from src.models.breadcrumb import create_breadcrumb
+from mentorhub_utils import create_breadcrumb, create_token
+from src.services.encounter_services import EncounterService
 
 import logging
 logger = logging.getLogger(__name__)
@@ -14,10 +13,10 @@ def create_encounter_routes():
     @encounter_routes.route('/', methods=['POST'])
     def create_encounter():
         try:
-            breadcrumb = create_breadcrumb()
             token = create_token()
+            breadcrumb = create_breadcrumb(token)
             data = request.get_json()
-            encounter = encounterService.create_encounter(data, token, breadcrumb)
+            encounter = EncounterService.create_encounter(data, token, breadcrumb)
             return jsonify(encounter), 200
         except Exception as e:
             logger.warning(f"A processing error occurred {e}")
@@ -28,7 +27,8 @@ def create_encounter_routes():
     def get_encounter(id):
         try:
             token = create_token()
-            encounter = encounterService.get_encounter(id, token)
+            breadcrumb = create_breadcrumb(token)
+            encounter = EncounterService.get_encounter(id, token)
             return jsonify(encounter), 200
         except Exception as e:
             logger.warning(f"Get Encounter, a processing error occurred {e}")
@@ -39,9 +39,9 @@ def create_encounter_routes():
     def update_encounter(id):
         try:
             token = create_token()
-            breadcrumb = create_breadcrumb()
+            breadcrumb = create_breadcrumb(token)
             data = request.get_json()
-            encounter = encounterService.update_encounter(id, data, token, breadcrumb)
+            encounter = EncounterService.update_encounter(id, data, token, breadcrumb)
             return jsonify(encounter), 200
         except Exception as e:
             logger.warning(f"A processing error occurred {e}")

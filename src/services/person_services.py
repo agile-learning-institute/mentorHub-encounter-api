@@ -1,5 +1,4 @@
-from src.config.config import config 
-from src.utils.mongo_io import mongoIO
+from mentorhub_utils import MentorHub_Config, MentorHubMongoIO
 
 from datetime import datetime
 from bson import ObjectId
@@ -29,6 +28,8 @@ class PersonService:
     @staticmethod
     def get_people(token):
         """Get a list of people"""
+        config = MentorHub_Config.get_instance()
+        mongoIO = MentorHubMongoIO.get_instance()
         people_collection_name = config.PEOPLE_COLLECTION_NAME
         match = PersonService._check_rbac_access(token)
         # TODO: Add Search Query to match
@@ -41,6 +42,8 @@ class PersonService:
     @staticmethod
     def get_mentors(token):
         """Get a list of mentors"""
+        config = MentorHub_Config.get_instance()
+        mongoIO = MentorHubMongoIO.get_instance()
         people_collection_name = config.PEOPLE_COLLECTION_NAME
         PersonService._check_rbac_access(token)
         match = {"roles": {"$in": ["mentor"]}}
